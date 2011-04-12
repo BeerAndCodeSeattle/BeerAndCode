@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Beer && Code Seattle</title>
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link href="css/main.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="js/bandc.js"></script>
+    <script type="text/javascript" src="js/carbonate.js"></script>
+    <script type="text/javascript">
+      $(function () {
+        var t = function (f) { $('#toggle').change(function (events) { f(); })};
+        carbonate(t);
+      });
+    </script>
+  </head>
+  <body>
+    <header>
+      <a href="index.html">
+        <img id="logo" src="img/beer_and_code_logo.png" />
+      </a>
+      <nav>
+        <ul>
+          <li><a href="index.html">home</a></li>
+          <li><a href="calendar.html">calendar</a></li>
+        </ul>
+      </nav>
+    </header>
+    <div id="content">
+      <h1>Welcome to Beer && Code Seattle</h1>
+      <div id="content_text">
+        <p>
+          Beer && Code is a bi&ndash;weekly Seattle meetup. Participants meet at least
+          one of these criteria:
+        </p>
+        <ul>
+          <li>Uses any programming language for work or for fun</li>
+          <li>Enjoys having a tasty drink while using aforementioned programming language</li>
+          <li>Likes the idea of meeting other Beer && Coders and building community</li>
+          <li>Thinks that being challenged by and learning from others is a great idea</li>
+        </ul>
+        <p>
+          Sound cool so far? Head over to the <a href="#">Calendar</a> and come to our next meetup.
+        </p>
+        <p>
+          If you're new, here are some common questions you might have:
+        </p>
+        <ul>
+          <li>I'm just learning programming and I'm a noob. Should I come? <span class="faq_answer">Yes!</span></li>
+          <li>I'm actually a designer and I use BLAH BLAH BLAH. Should I come? <span class="faq_answer">Yes!</span></li>
+          <li>I don't have anything to work on. Should I come? <span class="faq_answer">Yes! (we'll find you something)</span></li>          
+        </ul>
+        <p>
+          At the risk of sounding repetetive, Beer && Code is for anyone.
+        </p>
+        <p>
+          We meet at 7 pm and our location changes every few months.
+        </p>
+        <p>
+          We like beer. We like code. We like people. Come hang out with us.
+        </p>
+      </div>
+    </div>      
+  </body>
+</html>
