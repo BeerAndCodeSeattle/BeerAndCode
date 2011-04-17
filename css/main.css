@@ -58,12 +58,12 @@ table {
 /** Page-level **/
 @font-face {
   font-family: 'VT323';
-  src: url('/fonts/VT323/VT323.ttf');  
+  src: url('fonts/VT323/VT323.ttf');  
 }
 
 @font-face {
   font-family: 'Arvo';
-  src: url('/fonts/Arvo/Arvo-Regular.ttf');
+  src: url('fonts/Arvo/Arvo-Regular.ttf');
 }
 
 a, h1, h2, h3, h4 {
