@@ -37,7 +37,7 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 body {
-	line-height: 1;
+	line-height: 1.1em;
 	background-color: #f3f4eb;
 	font-family: 'Arvo', arial, serif;
 }
@@ -126,7 +126,6 @@ nav ul li a:active {
   text-transform: uppercase;
 }
 
-
 .activeNavLink, .hoverNavLink {
   text-transform: uppercase;
 }
@@ -140,4 +139,8 @@ nav ul li a:active {
 
 #content_text {
   text-align: left;  
+}
+
+#content_text a {
+  border-bottom: 1px dotted #161001;  
 }

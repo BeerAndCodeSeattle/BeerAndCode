@@ -1,28 +1,22 @@
 $(function() {    
-  var syncCookiePrefs = function () {
-    var ca, i, x, y;
-    ca = document.cookie.split(';');
-    for(i = 0; i < ca.length; i++) {
-      x = ca[i].substr(0, ca[i].indexOf('='));
-      y = ca[i].substr(ca[i].indexOf('=') + 1);
-      x = x.replace(/^\s+|\s+$/g, '');
-      if (x === 'carbonate') {
-        if(unescape(y) === 'true') {
-          $('#toggle').attr('checked', 'checked');
-        } else {
-          $('#toggle').removeAttr('checked');
-        }
-        return;
-      }
-    }          
-  };
+  (function ($) {
+    $.fn.konami = function (callback, code) {
+      if (code == undefined) code = "38,38,40,40,37,39,37,39,66,65";
+      return this.each(function () {
+        var kkeys = [];
+        $(this).keydown(function (e) {
+          kkeys.push(e.keyCode);
+          if (kkeys.toString().indexOf(code) >= 0) {
+            $(this).unbind('keydown', arguments.callee);
+            callback(e);
+          }
+        }, true);
+      });
+    }
+  }(jQuery));
   
-  if(document.cookie && document.cookie.indexOf('carbonate') !== -1){
-    syncCookiePrefs();  
-  }
-  
-  $(function () {
-    var t = function (f) { $('#toggle').change(function (events) { f(); })};
-    carbonate(t);
+  $(window).konami(function () {
+    var carbonate = new Carbonate();
+    carbonate.start(); 
   });  
 });
