@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ page.title }}</title>
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link href="/css/main.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript" src="/js/jquery-1.5.2.min.js"></script>
+    <script type="text/javascript" src="/js/carbonate.js"></script>
+    <script type="text/javascript" src="/js/bandc.js"></script>
+  </head>
+  <body>
+    <header>
+      {% include header.html %}
+    </header>
+    <div id="content">
+      {{ content }}
+    </div>      
+  </body>
+</html>
