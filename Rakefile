@@ -8,4 +8,8 @@ namespace :site do
   task :dev do
     system "jekyll --server"
   end
+
+  task :gen do
+    system "jekyll"
+  end
 end
