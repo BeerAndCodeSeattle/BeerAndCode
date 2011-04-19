@@ -37,7 +37,6 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 body {
-	line-height: 1.1em;
 	background-color: #f3f4eb;
 	font-family: 'Arvo', arial, serif;
 }
@@ -139,13 +138,23 @@ nav ul li a:active {
 
 #content_text {
   text-align: left;  
+  line-height: 1.1em;
 }
 
 #content_text a {
   border-bottom: 1px dotted #161001;  
 }
 
-.vcard { clear: left; float: left; margin-bottom: 1em; }
+.vcard { 
+  margin: 1em auto;
+  padding: 12px;
+  width: 350px;
+  background-color: #fff;
+  -moz-box-shadow: 3px 3px 3px #666;
+  -webkit-box-shadow: 3px 3px 3px #666;
+  box-shadow: 3px 3px 3px #666;
+}
+
 .vcard .photo { float: left; }
 .vcard .name { float: left; vertical-align: middle; line-height: 50px; margin: 0 0 0 .5em; }
 .vcard ul { clear: left; float: left; }
