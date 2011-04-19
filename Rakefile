@@ -6,7 +6,7 @@ namespace :site do
 
   desc 'Build and run for development'
   task :dev do
-    system "jekyll --server"
+    system "jekyll --server --auto"
   end
 
   task :gen do
