@@ -144,3 +144,8 @@ nav ul li a:active {
 #content_text a {
   border-bottom: 1px dotted #161001;  
 }
+
+.vcard { clear: left; float: left; margin-bottom: 1em; }
+.vcard .photo { float: left; }
+.vcard .name { float: left; vertical-align: middle; line-height: 50px; margin: 0 0 0 .5em; }
+.vcard ul { clear: left; float: left; }
