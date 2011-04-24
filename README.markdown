@@ -18,6 +18,7 @@ Things that are still up in the air:
 
 ## Current Build Instructions
 **Prerequisites:** 
+
 * Ruby - http://www.ruby-lang.org/
 * jekyll - (gem install jekyll)
 
