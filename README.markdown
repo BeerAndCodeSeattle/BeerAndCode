@@ -1,4 +1,5 @@
 This is the project page for the Beer && Code Seattle web site
+=============================
 
 There are no decisions (technical or otherwise) other than the following:
 
@@ -14,3 +15,13 @@ Things that are still up in the air:
   What technology to use
   The look and feel of the site
   Other features I didn't list here
+
+## Current Build Instructions
+**Prerequisites:** 
+* Ruby - http://www.ruby-lang.org/
+* jekyll - (gem install jekyll)
+
+**Build Static HTML**
+* rake site:gen
+
+The rake command builds the static HTML and places the output inside the /_site directory.
