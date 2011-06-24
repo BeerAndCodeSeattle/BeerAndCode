@@ -1,0 +1,29 @@
+h1 People
+#content_text
+  - each person in people
+    .vcard
+      div
+        img(style="float: left;", src="http://www.gravatar.com/avatar/" + person.gravatar + "?s=50&d=mm", alt="photo of ' + person.name, class="photo")
+        h2(style="float: left;").name= person.name      
+      ul
+        li
+          span.irc
+            span(class="type irc") irc: 
+            span.value= person.irc
+        li
+          span.uri
+            span(class="type github") github: 
+            span.value
+              a(href="https://github.com/" + person.github, target="_blank").url= person.github
+        - if (person.github2)
+          li
+            span.uri
+              span(class="type github") github: 
+              span.value
+                a(href="https://github.com/" + person.github2, target="_blank").url= person.github2
+        li
+          span.uri
+            span(class="type twitter") twitter: 
+            span.value
+              a(href="http://twitter.com/" + person.twitter, target="_blank").url @#{person.twitter}
+      br(style="clear: left;")
