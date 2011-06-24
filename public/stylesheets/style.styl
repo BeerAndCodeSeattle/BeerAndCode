@@ -72,39 +72,65 @@ a
   text-decoration none
 
 /** Header specific **/
-header img
-  height 150px
-
 header
   text-align center
   background-color #412919
   padding-bottom 18px
+  img
+    height 150px  
 
 /* Nav */
 nav ul
   list-style-type none
   padding 0
   margin 0
-
-nav ul li
-  display inline
-  margin 0 8px
-
-nav ul li a:link {
-  font-family 'VT323', arial, serif
-  color #f6f4cd
-  font-size 1.5em
-
-nav ul li a:visited
-  font-family 'VT323', arial, serif
-  color #f6f4cd
-  font-size 1.5em
-
-nav ul li a:hover
-  text-transform uppercase
-
-nav ul li a:active
-  text-transform uppercase
+  li
+    display inline
+    margin 0 8px
+    a:link
+      font-family 'VT323', arial, serif
+      color #f6f4cd
+      font-size 1.5em
+    a:visited
+      font-family 'VT323', arial, serif
+      color #f6f4cd
+      font-size 1.5em
+    a:hover
+      text-transform uppercase
+    a:active
+      text-transform uppercase
 
 .activeNavLink, .hoverNavLink 
   text-transform uppercase
+
+/* Content */
+#content
+  width 50%
+  margin 0 auto
+  text-align center
+
+#content_text
+  text-align left
+  line-height 1.1em
+  a
+    border-bottom: 1px dotted #161001;
+      
+.vcard 
+  margin 1em auto
+  padding 12px
+  width 350px
+  background-color #fff
+  -moz-box-shadow 3px 3px 3px #666
+  -webkit-box-shadow 3px 3px 3px #666
+  box-shadow 3px 3px 3px #666
+    
+.vcard .photo
+  float left
+.vcard .name 
+  float left
+  vertical-align middle
+  line-height 50px
+  margin 0 0 0 .5em
+.vcard ul
+  clear left
+  float left

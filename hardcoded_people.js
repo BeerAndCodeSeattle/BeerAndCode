@@ -87,7 +87,7 @@ exports.people = people.sort(function (a, b) {
     return -1;
   } else if (a.name > b.name) {
     return 1;
-  } else {
+  } else {  
     return 0;
   }
 });

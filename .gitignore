@@ -1,2 +1,7 @@
 .project
 _site/*
+.monitor
+.nodemonignore
+node_modules
+.logs
+.pids

@@ -4,6 +4,7 @@
  */
 
 var express = require('express');
+var people = require('./hardcoded_people').people;
 
 var app = module.exports = express.createServer();
 
@@ -31,7 +32,22 @@ app.configure('production', function(){
 
 app.get('/', function(req, res){
   res.render('index', {
-    title: 'Express'
+    title: 'Seattle Beer && Code'
+  });
+});
+
+app.get('/people', function (req, res) {
+  res.render('people', {
+    title: 'People',
+    locals: { 
+      people: people
+    }
+  });
+});
+
+app.get('/calendar', function (req, res) {
+  res.render('calendar', {
+    title: 'Calendar'
   });
 });
 
