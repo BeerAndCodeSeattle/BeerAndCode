@@ -21,9 +21,11 @@ Please see the Issues page for feature ideas
 * [NPM](http://npmjs.org/)
 
 **Dependency Installation:**
+
 * See the package.json file. You should just be able to run `npm install` within the same directory as this file to get all the dependencies
 
 **Running the site**
+
 * `node app.js`
 * Install nodemon from NPM to make changes without having to restart the server manually
 
