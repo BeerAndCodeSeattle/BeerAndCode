@@ -1,28 +1,29 @@
 This is the project page for the Beer && Code Seattle web site
 =============================
 
-There are no decisions (technical or otherwise) other than the following:
+**This is the [Node.js](http://nodejs.org) port of the Beer && Code site**
+
+Beer && Code has grown and the community would like to see the site grow with it.
+
+Our goals are still the same:
 
 * The site should EXPLAIN what Beer && Code is
 * The site should ORGANIZE by detailing when and where each event occurs
 * The site should INSPIRE people to share and collaborate on projects
 * The site should EXCITE people about the idea (ie, it should look cool)
 
-Another idea was to create a way to list 'regulars'
-  This would be a good way for us to learn each other's names
-  
-Things that are still up in the air:
-  What technology to use
-  The look and feel of the site
-  Other features I didn't list here
+Please see the Issues page for feature ideas
 
 ## Current Build Instructions
 **Prerequisites:** 
 
-* Ruby - http://www.ruby-lang.org/
-* jekyll - (gem install jekyll)
+* [Node.js](http://nodejs.org)
+* [NPM](http://npmjs.org/)
 
-**Build Static HTML**
-* rake site:gen
+**Dependency Installation:**
+* See the package.json file. You should just be able to run `npm install` within the same directory as this file to get all the dependencies
 
-The rake command builds the static HTML and places the output inside the /_site directory.
+**Running the site**
+* `node app.js`
+* Install nodemon from NPM to make changes without having to restart the server manually
+
