@@ -1,9 +1,10 @@
 {
-    "name": "application-name"
-  , "version": "0.0.1"
-  , "private": true
-  , "dependencies": {
-      "express": "2.3.12"
-    , "jade": ">= 0.0.1"
+  "name": "beer-and-code",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "2.3.12",
+    "jade": ">= 0.0.1",
+    "stylus": ">= 0.13.4"
   }
 }
