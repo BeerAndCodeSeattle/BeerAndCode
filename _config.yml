@@ -1,6 +1,0 @@
-pygments: true
-lsi: true
-permalink: pretty
-markdown: rdiscount
-paginate: 10
-exclude: ["Rakefile"]
