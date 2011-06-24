@@ -27,7 +27,7 @@ Please see the Issues page for feature ideas
 **Running the site**
 
 * `node app.js`
-* Install nodemon from NPM to make changes without having to restart the server manually
+* Install [nodemon](http://search.npmjs.org/#/nodemon) from NPM to make changes without having to restart the server manually
 
 **Stuff you can learn to contribute**
 
