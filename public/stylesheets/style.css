@@ -130,7 +130,7 @@ li {
   margin-bottom: 6px;
 }
 #wrap {
-  width: 80%;
+  width: 960px;
   margin: 0 auto;
 }
 a {
@@ -174,7 +174,7 @@ nav ul li a:active {
   text-transform: uppercase;
 }
 #content {
-  width: 50%;
+  width: 55%;
   margin: 0 auto;
   text-align: center;
 }
@@ -186,13 +186,16 @@ nav ul li a:active {
   border-bottom: 1px dotted #161001;
 }
 .vcard {
-  margin: 1em auto;
+  display: inline-block;
+  margin: 1em 1em;
   padding: 12px;
-  width: 350px;
+  width: 310px;
+  height: 180px;
   background-color: #fff;
   -moz-box-shadow: 3px 3px 3px #666;
   -webkit-box-shadow: 3px 3px 3px #666;
   box-shadow: 3px 3px 3px #666;
+  float: left;
 }
 .vcard .photo {
   float: left;
