@@ -29,3 +29,10 @@ Please see the Issues page for feature ideas
 * `node app.js`
 * Install nodemon from NPM to make changes without having to restart the server manually
 
+**Stuff you can learn to contribute**
+
+* [node](http://nodejs.org) - Good to read if you've never used node
+* [express](http://expressjs.com/) - Microframework. Basic core of the site
+* [jade](http://jade-lang.com) - Templating engine. Kind of like HAML
+* [stylus](http://learnboost.github.com/stylus/) - Stylesheets. Kind of like less/sass
+* [mongoose](http://mongoosejs.com/) - Persistence via MongoDB
