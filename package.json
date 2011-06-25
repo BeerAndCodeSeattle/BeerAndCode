@@ -6,6 +6,7 @@
     "express": "2.3.12",
     "jade": ">= 0.0.1",
     "stylus": ">= 0.13.4",
-    "mongoose": "1.4.0"
+    "mongoose": ">= 1.4.0",
+    "underscore": ">= 1.1.6"
   }
 }
