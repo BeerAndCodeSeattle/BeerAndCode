@@ -4,8 +4,9 @@
  */
 
 var express = require('express'),
-    //people = require('./hardcoded_people').people,
+    https = require('https'),
     mongoose = require('mongoose'),
+    _ = require('underscore'),
     models = require('./models'),
     db,
     Person,
@@ -13,7 +14,6 @@ var express = require('express'),
 
 
 // Configuration
-
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
@@ -60,10 +60,99 @@ app.get('/', function(req, res){
   });
 });
 
+// Poeple Related Routes
+app.get('/people/new', function (req, res) {
+  res.render('people/new', {
+    title: 'New Person', 
+    locals: {
+      person: new Person()
+    }
+  });
+});
+
+app.post('/people/new', function (req, res) {
+  console.dir(req.body);
+
+  res.redirect('/people')
+});
+
+app.get('/people/:id', function (req, res) {
+  Person.findOne({ url_slug: req.params.id }, function (err, person) {
+    if (!err) {    
+      res.render('people/show', {
+        title: person.name, 
+        locals: {
+          person: person
+        }
+      });
+    }
+  });
+});
+
+app.get('/people/:id/edit', function (req, res) {
+  Person.findOne({ url_slug: req.params.id }, function (err, person) {
+    if (!err) {
+      res.render('people/update', {
+        title: 'Updating ' + person.name,
+        locals: {
+          person: person
+        }
+      });
+    }
+  });
+});
+
+app.post('/people/:id/edit', function (req, res) {
+  console.dir(req.body);
+  if(req.body.Save) {
+    Person.findOne({ url_slug : req.params.id }, function (err, person) {
+      // Perform some updating action here
+    });
+  }
+  res.redirect('/people/' + req.params.id + '/edit');
+});
+
+app.get('/people/:id/getGithubProjects', function (req, res) {
+  // Download and return a list of public Github projects
+  // for a user
+  Person.findOne({ url_slug : req.params.id }, function (err, person) {            
+    var options = {};
+    if (!err) {
+      // Configure the Github request
+      options.host = 'github.com'
+      options.path = '/api/v2/json/repos/show/' + person.github;
+      options.port = 443;
+      options.method = 'GET';
+
+      https.get(options, function (httpsRes) {        
+        httpsRes.on('data', function (d) {
+
+          var projects = JSON.parse(d);
+          var project_list = _.map(projects.repositories, function (repo) {
+            // Return an object that looks like the projects
+            // defined in the model
+            return {
+              'name': repo.name,
+              'project_url': repo.url,
+              'description': repo.description 
+            };
+          });
+          
+          res.writeHead(200, {
+            'Content-Type': 'application/json'
+          });
+
+          res.end(JSON.stringify(project_list));
+        });
+      });
+    }
+  });
+});
+
 app.get('/people', function (req, res) {
   Person.find({}, function (err, people) {
      if (!err) {
-      res.render('people', {
+      res.render('people/index', {
           title: 'People',
           locals: { 
             people: people
@@ -72,6 +161,8 @@ app.get('/people', function (req, res) {
      } 
   });  
 });
+
+// End People Related Routes
 
 app.get('/calendar', function (req, res) {
   res.render('calendar', {

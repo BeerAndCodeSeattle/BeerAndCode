@@ -210,3 +210,24 @@ nav ul li a:active {
   clear: left;
   float: left;
 }
+.person_details {
+  text-align: left;
+}
+.person_details img {
+  float: right;
+}
+.person_details label {
+  font-size: 0.8em;
+}
+.person_details input[type="text"],
+.person_details input[type ="email"] {
+  border: none;
+  padding: 8px 12px;
+  width: 300px;
+}
+.person_details textarea {
+  border: none;
+  padding: 8px 12px;
+  width: 500px;
+  height: 312px;
+}

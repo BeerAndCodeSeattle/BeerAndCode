@@ -1,0 +1,15 @@
+.person_details
+  img(src='http://www.gravatar.com/avatar/' + person.gravatar + '?s=200')
+  h1= person.name
+  section
+    h2 Bio
+    !{ person.bio }
+  section
+    h2 Languages
+    ul
+      - each language in person.languages
+        li= language
+  section
+    h2 Projects
+      
+

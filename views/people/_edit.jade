@@ -1,0 +1,58 @@
+- if (person.name)
+  - if (person.name[person.name.length - 1] !== 's')
+    h1 #{ person.name }'s Stuff
+  - else 
+    h1 #{ person.name }' Stuff
+- else 
+  h1 New Person
+
+h2 Contact Information
+p
+  label(for='person[name]') name
+  br
+  input(type='text', name='person[name]', value= person.name || '')
+p
+  label(for='person[email]') email
+  br
+  input(type='email', name='person[email]', value= person.email || '')
+p
+  label(for='person[irc]') irc
+  br
+  input(type='text', name='person[irc]', value= person.irc || '')
+p
+  label(for='person[twitter]') twitter
+  br
+  input(type='text', name='person[twitter]', value= person.twitter || '')
+p
+  label(for='person[github]') github
+  br
+  input(type='text', name='person[github]', value= person.github || '')
+
+h2 Bio
+
+textarea(name='person[bio]', placeholder='Tell us about yourself. Use markdown. Be brief')
+
+h2 Projects
+
+- if (person.projects.length > 0)
+  ul.projects
+  - each project in person.projects
+    li
+      a(href= project.project_url)= project.name
+      br
+      span.project_description= project.description
+- else
+  ul.projects
+    li 
+      span.project_description No projects listed!
+
+h2 Languages
+
+- if (person.languages.length > 0)
+  ul.languages
+  - each language in person.languages
+    li= language
+- else
+  ul.languages
+    li No languages listed!
+      

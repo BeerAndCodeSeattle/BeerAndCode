@@ -1,0 +1,5 @@
+form(method='post', action='/people/' + person.url_slug + '/edit').person_details!= partial('edit', {object: person})
+
+  p
+    input(type='submit', name='Save', value='Save')
+    input(type='submit', name='Cancel', value='Cancel')
