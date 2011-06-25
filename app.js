@@ -3,10 +3,14 @@
  * Module dependencies.
  */
 
-var express = require('express');
-var people = require('./hardcoded_people').people;
+var express = require('express'),
+    //people = require('./hardcoded_people').people,
+    mongoose = require('mongoose'),
+    models = require('./models'),
+    db,
+    Person,
+    app = module.exports = express.createServer();
 
-var app = module.exports = express.createServer();
 
 // Configuration
 
@@ -24,9 +28,29 @@ app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
 });
 
+app.configure('development', function() {
+  app.set('db-uri', 'mongodb://localhost/bandc206-dev');
+});
+
+app.configure('test', function() {
+  app.set('db-uri', 'mongodb://localhost/bandc206-test');
+});
+
+app.configure('production', function() {
+  app.set('db-uri', 'mongodb://localhost/bandc206-production');
+});
+
 app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
+
+models.defineModels(mongoose, function () {
+  app.Person = Person = mongoose.model('Person');
+  db = mongoose.connect(app.set('db-uri'));
+});
+
+// Bootstrap
+require('./bootstrap').bootstrap(Person);
 
 // Routes
 
@@ -37,12 +61,16 @@ app.get('/', function(req, res){
 });
 
 app.get('/people', function (req, res) {
-  res.render('people', {
-    title: 'People',
-    locals: { 
-      people: people
-    }
-  });
+  Person.find({}, function (err, people) {
+     if (!err) {
+      res.render('people', {
+          title: 'People',
+          locals: { 
+            people: people
+          }
+        });       
+     } 
+  });  
 });
 
 app.get('/calendar', function (req, res) {
