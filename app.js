@@ -6,6 +6,7 @@
 var express = require('express'),
     https = require('https'),
     mongoose = require('mongoose'),
+    markdown = require('markdown').markdown,
     _ = require('underscore'),
     models = require('./models'),
     db,
@@ -72,13 +73,27 @@ app.get('/people/new', function (req, res) {
 
 app.post('/people/new', function (req, res) {
   console.dir(req.body);
+  var person = new Person();
+  person.name = req.body.person.name;
+  person.email = req.body.person.email;
+  person.irc = req.body.person.irc;
+  person.twitter = req.body.person.twitter;
+  person.github = req.body.person.github;
+  person.bio = req.body.person.bio;
 
-  res.redirect('/people')
+  person.save(function (err) {
+    if (!err) {
+      res.redirect('/people/' + person.url_slug);
+    }
+  });  
 });
 
 app.get('/people/:id', function (req, res) {
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
     if (!err) {    
+      // Convert bio from md to HTML, but don't persist
+      person.bio = markdown.toHTML(person.bio);
+
       res.render('people/show', {
         title: person.name, 
         locals: {
