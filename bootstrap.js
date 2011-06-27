@@ -8,7 +8,7 @@ exports.bootstrap = function (Person) {
       david.twitter = 'TheDahv';
       david.github = 'TheDahv';
       david.github2 = null;
-      david.bio = "<p>Hi I'm David.</p><p>I started writing code and drinking beer and it turned into Beer && Code</p>";
+      david.bio = "Hi I'm **David**. I started writing code and drinking beer and it turned into Beer && Code";
       david.languages = ['javascript', 'node', 'c#', 'jQuery', 'css'];
       david.save(function (err) {
         if (err) {
