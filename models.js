@@ -20,7 +20,6 @@ function defineModels(mongoose, fn) {
     irc       : String,
     twitter   : String,
     github    : String,  
-    github2   : String,
     bio       : String,
     url_slug  : String,
     languages : [String],
