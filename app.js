@@ -121,9 +121,21 @@ app.post('/people/:id/edit', function (req, res) {
   if(req.body.Save) {
     Person.findOne({ url_slug : req.params.id }, function (err, person) {
       // Perform some updating action here
+      person.name = req.body.person.name;
+      person.email = req.body.person.email;
+      person.irc = req.body.person.irc;
+      person.twitter = req.body.person.twitter;
+      person.github = req.body.person.github;
+      person.bio = req.body.person.bio;
+
+      person.save(function (err) {
+        if (!err) {
+          res.redirect('/people/' + req.params.id);
+        }
+      });
     });
   }
-  res.redirect('/people/' + req.params.id + '/edit');
+  
 });
 
 app.get('/people/:id/getGithubProjects', function (req, res) {
