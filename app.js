@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -165,7 +164,7 @@ app.get('/people/:id/getGithubProjects', function (req, res) {
 });
 
 app.get('/people', function (req, res) {
-  Person.find({}, function (err, people) {
+  Person.find({}, [], {sort: {'name': 1}}, function (err, people) {
      if (!err) {
       res.render('people/index', {
           title: 'People',
