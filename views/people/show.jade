@@ -11,5 +11,13 @@
         li= language
   section
     h2 Projects
+    - if (person.projects.length > 0)
+      - each project in person.projects
+        article.project
+          h3
+            a(href=project.url)= project.name
+          p= project.description
+    - else
+      p.project No projects added!
       
 
