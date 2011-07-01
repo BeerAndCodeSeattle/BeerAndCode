@@ -33,6 +33,10 @@ h2 Bio
 textarea(name='person[bio]', placeholder='Tell us about yourself. Use markdown. Be brief')
   !{ person.bio }
 
+h2 Languages
+
+input(type='text', name='person[language_string]', value= person.language_string || '', placeholder='Languages separated by commas')
+
 h2 Projects
 
 - if (person.projects.length > 0)
@@ -46,14 +50,4 @@ h2 Projects
   ul.projects
     li 
       span.project_description No projects listed!
-
-h2 Languages
-
-- if (person.languages.length > 0)
-  ul.languages
-  - each language in person.languages
-    li= language
-- else
-  ul.languages
-    li No languages listed!
       
