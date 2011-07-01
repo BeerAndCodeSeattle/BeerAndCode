@@ -9,8 +9,8 @@
     ul
       - each language in person.languages
         li= language
-  section
-    h2 Projects
+  h2 Projects
+  section.projects_list
     - if (person.projects.length > 0)
       - each project in person.projects
         article.project
@@ -19,5 +19,5 @@
           p= project.description
     - else
       p.project No projects added!
-      
+        
 

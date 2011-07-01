@@ -19,4 +19,19 @@ $(function() {
     var carbonate = new Carbonate();
     carbonate.start(); 
   });  
+
+  // Project form stuff
+  if ('form.person_details') {
+    var add_project_btn = $('<button />').attr({
+      id: 'add_project'
+    });
+    add_project_btn.text('Add Project');
+    $('.projects_list').append(add_project_btn);
+
+    $(add_project_btn).click(function (event) {
+      $('#add_project').hide();      
+      
+      $('#new_project_template').tmpl({}).appendTo('.projects_list');      
+    });
+  }
 });

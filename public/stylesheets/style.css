@@ -231,3 +231,6 @@ nav ul li a:active {
   width: 500px;
   height: 312px;
 }
+.person_details .projects_list .project p {
+  font-style: italic;
+}

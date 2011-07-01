@@ -87,7 +87,6 @@ app.get('/people/edit/:id', function (req, res) {
 });
 
 app.post('/people/edit/:id', function (req, res) {
-  console.dir(req.body);
   if(req.body.Save) {
     Person.findOne({ url_slug : req.params.id }, function (err, person) {
       // Perform some updating action here
@@ -108,6 +107,38 @@ app.post('/people/edit/:id', function (req, res) {
       });
     });
   }  
+});
+
+app.post('/people/addProjectToPerson/:id', function (req, res) {
+  console.log(req);
+
+  res.writeHead(200, {
+    'Content-Type': 'text/plain'
+  });
+  res.end('OK');
+
+  // res.writeHead(500, {
+  //   'Content-Type': 'text/plain'
+  // });
+  // res.end('ERROR: ' + err);
+
+  // Person.findOne({ url_slug : req.params.id }, function (err, person) {
+  //   var project = {
+  //     name: '',
+  //     project_url: '',
+  //     description: ''
+  //   }; 
+
+  //   person.projects.push(project);
+  //   person.save(function (err) {
+  //     if (!err) {
+  //       res.end('')
+  //     } else {
+  //       console.log(err);
+
+  //     }
+  //   });
+  // });
 });
 
 app.post('/people/new', function (req, res) {
