@@ -1,5 +1,28 @@
 form(method='post', action='/people/edit/' + person.url_slug).person_details!= partial('edit', {object: person})
-
   p
     input(type='submit', name='Save', value='Save')
     input(type='submit', name='Cancel', value='Cancel')
+
+script(type='text/html')#new_project_template
+  form(class='new_project', post='#', action='post')
+    p
+      label(for='project_name') Name
+      br
+      input(name='project_name', type='text')
+    p
+      label(for='project_url') URL
+      br
+      input(name='project_url', type='text')
+    p
+      label(for='project_description') Description
+      br    
+      input(name='project_description', type='text')
+    span
+      button.project_save_button Save
+      button.project_cancel_button Cancel
+
+script(type='text/html')#project_template
+  article.project
+    h3
+      a(href= '${ project_url }') ${ name }
+    p ${ description }

@@ -12,10 +12,10 @@
   h2 Projects
   section.projects_list
     - if (person.projects.length > 0)
-      - each project in person.projects
+      - each project in person.projects.sort(function (a, b) { if (a.name <= b.name) { return -1; } else { return 1; } })
         article.project
           h3
-            a(href=project.url)= project.name
+            a(href= project.project_url)= project.name
           p= project.description
     - else
       p.project No projects added!

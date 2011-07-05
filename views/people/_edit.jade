@@ -33,33 +33,20 @@ h2 Bio
 textarea(name='person[bio]', placeholder='Tell us about yourself. Use markdown. Be brief')
   !{ person.bio }
 
-h2 Languages
+// The following sections are not available to edit
+// until the account is created
+- if (person.name) 
+  h2 Languages
 
-input(type='text', name='person[language_string]', value= person.language_string || '', placeholder='Languages separated by commas')
+  input(type='text', name='person[language_string]', value= person.language_string || '', placeholder='Languages separated by commas')
 
-h2 Projects
-section.projects_list
-  - if (person.projects.length > 0)
-    - each project in person.projects
-      article.project
-        h3
-          a(href=project.url)= project.name
-        p= project.description
-  - else
-    p.project No projects added!
-
-// jQuery Template Text for project forms
-script(type='text/html')#new_project_template
-  form(class='new_project', post='#', action='post')
-    p
-      label(for='project_name') Name
-      br
-      input(name='project_name', type='text')
-    p
-      label(for='project_url') URL
-      br
-      input(name='project_url', type='text')
-    p
-      label(for='project_description') Description
-      br    
-      input(name='project_description', type='text')
+  h2 Projects
+  section.projects_list
+    - if (person.projects.length > 0)
+      - each project in person.projects.sort(function (a, b) { if (a.name <= b.name) { return -1; } else { return 1; } })
+        article.project
+          h3
+            a(href=project.project_url)= project.name
+          p= project.description
+    - else
+      p.project No projects added!

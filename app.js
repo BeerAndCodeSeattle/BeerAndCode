@@ -110,35 +110,30 @@ app.post('/people/edit/:id', function (req, res) {
 });
 
 app.post('/people/addProjectToPerson/:id', function (req, res) {
-  console.log(req);
+  Person.findOne({ url_slug : req.params.id }, function (err, person) {
+    console.log(req.body);
+    var project = {
+      name: req.body.project_name,
+      project_url: req.body.project_url,
+      description: req.body.project_description
+    }; 
 
-  res.writeHead(200, {
-    'Content-Type': 'text/plain'
+    person.projects.push(project);
+    person.save(function (err) {
+      if (!err) {
+        res.writeHead(200, {
+          'Content-Type': 'text/plain'
+        });
+        res.end('OK');        
+      } else {
+        console.log(err);
+        res.writeHead(500, {
+          'Content-Type': 'text/plain'
+        });
+        res.end('ERROR: ' + err);
+      }
+    });
   });
-  res.end('OK');
-
-  // res.writeHead(500, {
-  //   'Content-Type': 'text/plain'
-  // });
-  // res.end('ERROR: ' + err);
-
-  // Person.findOne({ url_slug : req.params.id }, function (err, person) {
-  //   var project = {
-  //     name: '',
-  //     project_url: '',
-  //     description: ''
-  //   }; 
-
-  //   person.projects.push(project);
-  //   person.save(function (err) {
-  //     if (!err) {
-  //       res.end('')
-  //     } else {
-  //       console.log(err);
-
-  //     }
-  //   });
-  // });
 });
 
 app.post('/people/new', function (req, res) {
@@ -164,7 +159,7 @@ app.get('/people/:id', function (req, res) {
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
     if (!err) {    
       // Convert bio from md to HTML, but don't persist
-      person.bio = markdown.toHTML(person.bio);
+      person.bio = markdown.toHTML(person.bio);    
 
       res.render('people/show', {
         title: person.name, 
@@ -176,40 +171,36 @@ app.get('/people/:id', function (req, res) {
   });
 });
 
-app.get('/people/:id/getGithubProjects', function (req, res) {
+app.get('/people/getGithubProjects/:ghid', function (req, res) {
   // Download and return a list of public Github projects
   // for a user
-  Person.findOne({ url_slug : req.params.id }, function (err, person) {            
-    var options = {};
-    if (!err) {
-      // Configure the Github request
-      options.host = 'github.com'
-      options.path = '/api/v2/json/repos/show/' + person.github;
-      options.port = 443;
-      options.method = 'GET';
+  var options = {};
+  // Configure the Github request
+  options.host = 'github.com'
+  options.path = '/api/v2/json/repos/show/' + req.params.ghid;
+  options.port = 443;
+  options.method = 'GET';
 
-      https.get(options, function (httpsRes) {        
-        httpsRes.on('data', function (d) {
+  https.get(options, function (httpsRes) {        
+    httpsRes.on('data', function (d) {
+      var projects = JSON.parse(d);
 
-          var projects = JSON.parse(d);
-          var project_list = _.map(projects.repositories, function (repo) {
-            // Return an object that looks like the projects
-            // defined in the model
-            return {
-              'name': repo.name,
-              'project_url': repo.url,
-              'description': repo.description 
-            };
-          });
-          
-          res.writeHead(200, {
-            'Content-Type': 'application/json'
-          });
-
-          res.end(JSON.stringify(project_list));
-        });
+      var project_list = _.map(projects.repositories, function (repo) {
+        // Return an object that looks like the projects
+        // defined in the model
+           return {
+          'name': repo.name,
+          'project_url': repo.url,
+          'description': repo.description 
+        };
       });
-    }
+      
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      });
+
+      res.end(JSON.stringify(project_list));
+    });
   });
 });
 
