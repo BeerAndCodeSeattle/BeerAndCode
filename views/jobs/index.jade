@@ -1,15 +1,15 @@
 h1 Jobs
 
 section
-  input(type='checkbox', name='employers') 
+  input(type='checkbox', name='employers', id='employers') 
   label(for='employers') Looking for Employees  
-  input(type='checkbox', name='employees') 
+  input(type='checkbox', name='employees', id='employees') 
   label(for='employees') Looking for Employers
 
 - if (job_posts.length + job_requests.length > 0)
   section
     - each t in technologies
-      input(type='checkbox', name= t)
+      input(type='checkbox', name= t, id= t)
       label(for= t)= t
 
   - if (job_posts.length > 0)
