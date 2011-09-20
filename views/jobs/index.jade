@@ -1,0 +1,28 @@
+h1 Jobs
+
+section
+  input(type='checkbox', name='employers') 
+  label(for='employers') Looking for Employees  
+  input(type='checkbox', name='employees') 
+  label(for='employees') Looking for Employers
+
+- if (job_posts.length + job_requests.length > 0)
+  section
+    - each t in technologies
+      input(type='checkbox', name= t)
+      label(for= t)= t
+
+  - if (job_posts.length > 0)
+    section
+      - each j in job_posts
+        article.job_post        
+          h3
+            a(href='/jobs/jobPost/' + j.id)= j.headline
+          span.company_name= j.company_name
+          
+  - if (job_requests.length > 0) 
+    section
+      - each j in job_requests
+        article.job_request= j.headline
+- else
+  p No jobs listed!

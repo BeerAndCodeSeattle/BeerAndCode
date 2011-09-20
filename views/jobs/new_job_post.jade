@@ -1,0 +1,26 @@
+form(method='post', action='/jobs/createJobPost').job_form
+  p  
+    label(for='job[headline]') headline
+    br
+    input(type='text', name='job[headline]')
+  p
+    label(for='job[company_name]') company name
+    br
+    input(type='text', name='job[company_name]')
+  label(for='job[description]') description
+  br
+  textarea(name='job[description]')
+
+  p
+    label(for='job[info_url]') info url
+    br
+    input(type='text', name='job[info_url]')
+  p
+    label(for='job[contact_email]') contact email
+    br
+    input(type='email', name='job[contact_email]')
+  p
+    label(for='job[technologies_string]') technologies
+    br
+    input(type='text', name='job[technologies_string]')
+  input(type='submit', name='save', value='save')

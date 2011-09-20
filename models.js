@@ -1,7 +1,9 @@
 var MD5 = require('./MD5');
 // Model name declarations
 var Person,
-    Project;
+    Project,
+    JobPost,
+    JobRequest;
 
 function defineModels(mongoose, fn) {
   var Schema = mongoose.Schema,
@@ -26,6 +28,24 @@ function defineModels(mongoose, fn) {
     projects  : [Project]
   });
 
+  JobPost = new Schema({
+    headline      : String,
+    company_name  : String,
+    description   : String,
+    category      : {type: String, enum: ['ft', 'pt', 'fl', 'ct']}, /* full-time, part-time, freelance, contract */
+    info_url      : String,
+    contact_email : String,
+    technologies  : [String],
+    date_created  : Date
+  });
+
+  JobRequest = new Schema({
+    headline      : String,
+    category      : {type: String, enum: ['ft', 'pt', 'fl', 'ct']}, /* full-time, part-time, freelance, contract */    
+    technologies  : [String],
+    date_created  : Date
+  });
+
   Person.pre('save', function (next) {
     /*
     * Generate an MD5 hash of the supplied email
@@ -42,8 +62,19 @@ function defineModels(mongoose, fn) {
     next();
   });
 
+  JobPost.pre('save', function (next) {
+    this.date_created = this.date_created || new Date();
+    next();
+  });
+
+  JobRequest.pre('save', function (next) {
+    this.date_created = this.date_created || new Date();
+  });
+
   // Add to Mongoose
   mongoose.model('Person', Person);
+  mongoose.model('JobPost', JobPost);
+  mongoose.model('JobRequest', JobRequest);
 
   fn();
 };

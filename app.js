@@ -10,6 +10,8 @@ var express = require('express'),
     models = require('./models'),
     db,
     Person,
+    JobPost,
+    JobRequest,
     app = module.exports = express.createServer();
 
 
@@ -20,6 +22,7 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(require('stylus').middleware({ src: __dirname + '/public' }));
+  app.use(express.favicon(__dirname + '/public/favicon.ico'));
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -45,7 +48,9 @@ app.configure('production', function(){
 });
 
 models.defineModels(mongoose, function () {
-  app.Person = Person = mongoose.model('Person');
+  app.Person      = Person      = mongoose.model('Person');
+  app.JobPost     = JobPost     = mongoose.model('JobPost');
+  app.JobRequest  = JobRequest  = mongoose.model('JobRequest');
   db = mongoose.connect(app.set('db-uri'));
 });
 
@@ -222,6 +227,78 @@ app.get('/people', function (req, res) {
 app.get('/calendar', function (req, res) {
   res.render('calendar', {
     title: 'Calendar'
+  });
+});
+
+// Jobs routes
+app.get('/jobs/createJobPost', function (req, res) {
+  res.render('jobs/new_job_post', { 
+    title: 'New Job Post'
+  });
+});
+
+app.post('/jobs/createJobPost', function (req, res) {
+  var data = req.body.job;
+  var job_post = new JobPost();
+  job_post.headline = data.headline;
+  job_post.company_name = data.company_name;
+  job_post.description = data.description;
+  // job_post.category
+  job_post.info_url = data.info_url;
+  job_post.contact_email = data.contact_email;
+  job_post.technologies = _.map(data.technologies_string.split(','), function (t) { return t.trim(); });
+  job_post.save(function (err) {
+    if (err) throw err;
+
+    res.redirect('/jobs/jobPost/' + job_post.id);
+  });
+});
+
+app.get('/jobs/jobPost/:id', function (req, res) {
+  JobPost.findById(req.params.id, function(err, job) {
+    res.render('jobs/job_post', {
+      title: 'Job Post',
+      locals: {
+        job: job
+      }
+    });
+  });
+});
+
+app.get('/jobs/createJobRequest', function (req, res) {
+  res.render('jobs/new_job_request', {
+    title: 'New Job Request'
+  });
+});
+
+app.post('/jobs/createJobRequest', function (req, res) {
+  res.redirect('/');
+});
+
+app.get('/jobs', function (req, res) {
+  var currentDate = new Date();
+  var expirationDate = currentDate.setDate(currentDate.getDate() - 30);
+
+  JobPost.find({ date_created: {$gt : expirationDate }}, function (err1, job_posts) {    
+    JobRequest.find({ date_created: {$gt : expirationDate }}, function (err2, job_requests) {      
+      var modified_requests, modified_postings;
+
+      if (err1 || err2) throw err1 || err2;
+
+      var techs = _.union(
+        _.map(job_posts, function (j) { return j.technologies; }), 
+        _.map(job_requests, function (j) { return j.technologies; }
+      ));
+
+      res.render('jobs/index', {
+        title: 'Jobs',
+        locals: {
+          job_posts: job_posts,
+          job_requests: job_requests,
+          technologies: techs
+        }
+      });      
+    });    
   });
 });
 

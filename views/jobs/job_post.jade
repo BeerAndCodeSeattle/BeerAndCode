@@ -1,0 +1,15 @@
+section.job_information
+  h3= job.headline
+  p
+    | Company Name: #{ job.company_name }
+  p= job.description 
+  p
+    | More information at 
+    a(href= job.info_url)= job.info_url
+  p
+    | Contact 
+    a(href='mailto:'+job.contact_email)= job.contact_email
+  p Related technologies:
+  ul
+    - each t in job.technologies
+      li= t
