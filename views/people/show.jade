@@ -6,9 +6,11 @@
     !{ person.bio }
   section
     h2 Languages
-    ul
-      - each language in person.languages
-        li= language
+    - if (person.languages.length > 0) 
+      ul
+        - each language in person.languages
+          - if (language)
+            li= language
   h2 Projects
   section.projects_list
     - if (person.projects.length > 0)

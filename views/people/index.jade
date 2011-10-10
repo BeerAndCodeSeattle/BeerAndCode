@@ -14,11 +14,13 @@ h1 People
         li
           span.uri
             span(class="type github") github: 
-            span.value
-              a(href="https://github.com/" + person.github, target="_blank").url= person.github
+            - if (person.github_nick) 
+              span.value
+                a(href="https://github.com/" + person.github_nick, target="_blank").url= person.github_nick
         li
           span.uri
             span(class="type twitter") twitter: 
-            span.value
-              a(href="http://twitter.com/" + person.twitter, target="_blank").url @#{person.twitter}
+            - if (person.twitter_nick) 
+              span.value
+                a(href="http://twitter.com/" + person.twitter_nick, target="_blank").url @#{person.twitter_nick}
   br(style="clear: left;")

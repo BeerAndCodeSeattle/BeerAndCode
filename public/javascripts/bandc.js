@@ -99,7 +99,7 @@ $(function() {
       });
 
       // Github automated import
-      var github_val = $('form.person_details').serializeArray().filter(function (obj) { return obj.name === 'person[github]'; })[0].value;
+      var github_val = $('form.person_details').serializeArray().filter(function (obj) { return obj.name === 'person[github_nick]'; })[0].value;
       if (github_val) {
         var github_btn = $('<button />').attr({
           id: 'add_project'          

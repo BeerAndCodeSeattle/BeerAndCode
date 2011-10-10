@@ -1,34 +1,147 @@
-/**
- * Module dependencies.
- */
-
 var express = require('express'),
-    https = require('https'),
     mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    mongooseAuth = require('mongoose-auth'),
+    conf = require('./conf'),
     markdown = require('markdown').markdown,
     _ = require('underscore'),
-    models = require('./models'),
-    db,
-    Person,
-    JobPost,
-    JobRequest,
-    app = module.exports = express.createServer();
 
+    Project,
+    PersonSchema,
+    Person,
+    JobPostSchema,
+    JobPost,
+    JobRequestSchema,
+    JobRequest,
+    app,
+    handleError;
+
+// Model config
+Project = new Schema({
+  name        : String, 
+  project_url : String,
+  description : String
+});
+
+PersonSchema = new Schema({
+  name          : String,
+  email         : String,
+  gravatar      : String, // MD5 hash based on email
+  irc           : String,
+  twitter_nick  : String,
+  github_nick   : String,  
+  bio           : String,
+  url_slug      : String,
+  languages     : [String],
+  projects      : [Project]
+});
+
+PersonSchema.plugin(mongooseAuth, {
+  everymodule: {
+    everyauth: {
+      User: function () {
+        return Person;
+      }
+    }
+  }, 
+  twitter: {
+    everyauth: {
+      myHostname: 'http://localhost:3000',
+      consumerKey: conf.twit.consumerKey,
+      consumerSecret: conf.twit.consumerSecret,
+      redirectPath: '/'
+    }          
+  },
+  password: {
+    loginWith: 'email',
+    extraParams: { name: String },
+    everyauth: {
+      getLoginPath: '/login',
+      postLoginPath: '/login',
+      loginView: 'sessions/login.jade',
+      getRegisterPath: '/register',
+      postRegisterPath: '/register',
+      registerView: 'sessions/register.jade',
+      loginSuccessRedirect: '/',
+      registerSuccessRedirect: '/'
+    }       
+  },
+  github: {
+    everyauth: {
+      myHostname: 'http://localhost:3000',
+      appId: conf.github.appId,
+      appSecret: conf.github.appSecret,
+      redirectPath: '/'
+    }         
+  }
+});
+
+PersonSchema.pre('save', function (next) {
+  console.log(this);
+  /*
+  * Generate an MD5 hash of the supplied email
+  * and save that as the gravatar string before saving
+  */
+  this.gravatar = require('./MD5').toMD5(this.email);
+
+  /*
+  * Remove spaces and weirdo characters to make an addressable
+  * slug for this person. Hope people don't have the same names...
+  */
+  this.url_slug = this.name.toLowerCase().replace(/\s/g, '-').replace(/[^a-z0-9\-]/g, '');
+
+  next();
+});
+
+JobPostSchema = new Schema({
+  headline      : String,
+  company_name  : String,
+  description   : String,
+  category      : {type: String, enum: ['ft', 'pt', 'fl', 'ct']}, /* full-time, part-time, freelance, contract */
+  info_url      : String,
+  contact_email : String,
+  technologies  : [String],
+  date_created  : Date
+});
+
+JobPostSchema.pre('save', function (next) {
+  this.date_created = this.date_created || new Date();
+  next();
+});
+
+JobRequestSchema = new Schema({
+  headline      : String,
+  category      : {type: String, enum: ['ft', 'pt', 'fl', 'ct']}, /* full-time, part-time, freelance, contract */    
+  technologies  : [String],
+  date_created  : Date
+});
+
+JobRequestSchema.pre('save', function (next) {
+  this.date_created = this.date_created || new Date();
+});
 
 // Configuration
-app.configure(function(){
+app = express.createServer(
+  express.bodyParser(),
+  require('stylus').middleware({ src: __dirname + '/public' }),
+  express.favicon(__dirname + '/public/favicon.ico'),
+  express.static(__dirname + '/public'),
+  express.cookieParser(),
+  express.session({ secret: 'a1b2c3d4' }),
+  mongooseAuth.middleware()
+);
+
+app.configure(function () {
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(require('stylus').middleware({ src: __dirname + '/public' }));
-  app.use(express.favicon(__dirname + '/public/favicon.ico'));
-  app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
 });
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+});
+
+app.configure('production', function(){
+  app.use(express.errorHandler()); 
 });
 
 app.configure('development', function() {
@@ -43,29 +156,41 @@ app.configure('production', function() {
   app.set('db-uri', 'mongodb://localhost/bandc206-production');
 });
 
-app.configure('production', function(){
-  app.use(express.errorHandler()); 
-});
+console.log(app.set('db-uri'));
+mongoose.connect(app.set('db-uri'));
 
-models.defineModels(mongoose, function () {
-  app.Person      = Person      = mongoose.model('Person');
-  app.JobPost     = JobPost     = mongoose.model('JobPost');
-  app.JobRequest  = JobRequest  = mongoose.model('JobRequest');
-  db = mongoose.connect(app.set('db-uri'));
-});
+mongoose.model('Person', PersonSchema);
+mongoose.model('JobPost', JobPostSchema);
+mongoose.model('JobRequest', JobRequestSchema);
+
+Person = mongoose.model('Person');
+JobPost = mongoose.model('JobPost');
+JobRequest = mongoose.model('JobRequest');
 
 // Bootstrap
-require('./bootstrap').bootstrap(Person);
+// require('./bootstrap').bootstrap(Person);
+
+var doAuth = function (req, res, next) {
+  if (req.loggedIn) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+};
 
 // Routes
-
 app.get('/', function(req, res){
   res.render('index', {
     title: 'Seattle Beer && Code'
   });
 });
 
-// Poeple Related Routes
+handleError = function (err, res) {
+  //res.writeHead(500, {'Content-Type': 'text/html'});
+  res.render('error', { locals: { err: err } });
+};
+
+// People Related Routes
 app.get('/people/new', function (req, res) {
   res.render('people/new', {
     title: 'New Person', 
@@ -75,9 +200,11 @@ app.get('/people/new', function (req, res) {
   });
 });
 
-app.get('/people/edit/:id', function (req, res) {
+app.get('/people/edit/:id', doAuth, function (req, res) {
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
-    if (!err) {
+    if (err) {
+      handleError(err, res);
+    } else {
       // Tack on a string representation of the languages supplied
       person.language_string = person.languages.join(', ');
 
@@ -91,30 +218,30 @@ app.get('/people/edit/:id', function (req, res) {
   });
 });
 
-app.post('/people/edit/:id', function (req, res) {
+app.post('/people/edit/:id', doAuth, function (req, res) {
   if(req.body.Save) {
     Person.findOne({ url_slug : req.params.id }, function (err, person) {
       // Perform some updating action here
       person.name = req.body.person.name;
       person.email = req.body.person.email;
       person.irc = req.body.person.irc;
-      person.twitter = req.body.person.twitter;
-      person.github = req.body.person.github;
+      person.twitter_nick = req.body.person.twitter_nick;
+      person.github_nick = req.body.person.github_nick;
       person.bio = req.body.person.bio;
-      person.languages = _.map(req.body.person.language_string.split(','), function (s) { return s.replace(/ /g, ''); });
+      person.languages = _.map(req.body.person.language_string.split(','), function (s) { return s.replace(/\s/g, ''); });
 
       person.save(function (err) {
-        if (!err) {
-          res.redirect('/people/' + req.params.id);
+        if (err) {
+          handleError(err, res);
         } else {
-          console.log(err);
+          res.redirect('/people/' + req.params.id);
         }
       });
     });
   }  
 });
 
-app.post('/people/addProjectToPerson/:id', function (req, res) {
+app.post('/people/addProjectToPerson/:id', doAuth, function (req, res) {
   Person.findOne({ url_slug : req.params.id }, function (err, person) {
     console.log(req.body);
     var project = {
@@ -141,30 +268,34 @@ app.post('/people/addProjectToPerson/:id', function (req, res) {
   });
 });
 
-app.post('/people/new', function (req, res) {
+app.post('/people/new', doAuth, function (req, res) {
   console.dir(req.body);
   var person = new Person();
   person.name = req.body.person.name;
   person.email = req.body.person.email;
   person.irc = req.body.person.irc;
-  person.twitter = req.body.person.twitter;
-  person.github = req.body.person.github;
+  person.twitter_nick = req.body.person.twitter_nick;
+  person.github_nick = req.body.person.github_nick;
   person.bio = req.body.person.bio;
 
   person.save(function (err) {
-    if (!err) {
-      res.redirect('/people/' + person.url_slug);
+    if (err) {
+      handleError(err, res);
     } else {
-      console.log(err);
+      res.redirect('/people/' + person.url_slug);
     }
   });  
 });
 
-app.get('/people/:id', function (req, res) {
+app.get('/people/:id', doAuth, function (req, res) {
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
-    if (!err) {    
-      // Convert bio from md to HTML, but don't persist
-      person.bio = markdown.toHTML(person.bio);    
+    if (err) {    
+      handleError(err, res);
+    } else {
+      if (person.bio) {
+        // Convert bio from md to HTML, but don't persist
+        person.bio = markdown.toHTML(person.bio);    
+      }
 
       res.render('people/show', {
         title: person.name, 
@@ -176,7 +307,7 @@ app.get('/people/:id', function (req, res) {
   });
 });
 
-app.get('/people/getGithubProjects/:ghid', function (req, res) {
+app.get('/people/getGithubProjects/:ghid', doAuth, function (req, res) {
   // Download and return a list of public Github projects
   // for a user
   var options = {};
@@ -186,7 +317,7 @@ app.get('/people/getGithubProjects/:ghid', function (req, res) {
   options.port = 443;
   options.method = 'GET';
 
-  https.get(options, function (httpsRes) {        
+  require('https').get(options, function (httpsRes) {        
     httpsRes.on('data', function (d) {
       var projects = JSON.parse(d);
 
@@ -211,8 +342,10 @@ app.get('/people/getGithubProjects/:ghid', function (req, res) {
 
 app.get('/people', function (req, res) {
   Person.find({}, [], {sort: {'name': 1}}, function (err, people) {
-     if (!err) {
-      res.render('people/index', {
+     if (err) {
+       handleError(err, res);
+     } else {
+        res.render('people/index', {
           title: 'People',
           locals: { 
             people: people
@@ -231,13 +364,13 @@ app.get('/calendar', function (req, res) {
 });
 
 // Jobs routes
-app.get('/jobs/createJobPost', function (req, res) {
+app.get('/jobs/createJobPost', doAuth, function (req, res) {
   res.render('jobs/new_job_post', { 
     title: 'New Job Post'
   });
 });
 
-app.post('/jobs/createJobPost', function (req, res) {
+app.post('/jobs/createJobPost', doAuth, function (req, res) {
   var data = req.body.job;
   var job_post = new JobPost();
   job_post.headline = data.headline;
@@ -248,13 +381,16 @@ app.post('/jobs/createJobPost', function (req, res) {
   job_post.contact_email = data.contact_email;
   job_post.technologies = _.map(data.technologies_string.split(','), function (t) { return t.trim(); });
   job_post.save(function (err) {
-    if (err) throw err;
+    if (err) {
+      handleError(err, res); 
+    } else {
+      res.redirect('/jobs/jobPost/' + job_post.id);
+    }
 
-    res.redirect('/jobs/jobPost/' + job_post.id);
   });
 });
 
-app.get('/jobs/jobPost/:id', function (req, res) {
+app.get('/jobs/jobPost/:id', doAuth, function (req, res) {
   JobPost.findById(req.params.id, function(err, job) {
     res.render('jobs/job_post', {
       title: 'Job Post',
@@ -265,17 +401,17 @@ app.get('/jobs/jobPost/:id', function (req, res) {
   });
 });
 
-app.get('/jobs/createJobRequest', function (req, res) {
+app.get('/jobs/createJobRequest', doAuth, function (req, res) {
   res.render('jobs/new_job_request', {
     title: 'New Job Request'
   });
 });
 
-app.post('/jobs/createJobRequest', function (req, res) {
+app.post('/jobs/createJobRequest', doAuth, function (req, res) {
   res.redirect('/');
 });
 
-app.get('/jobs', function (req, res) {
+app.get('/jobs', doAuth, function (req, res) {
   var currentDate = new Date();
   var expirationDate = currentDate.setDate(currentDate.getDate() - 30);
 
@@ -283,24 +419,29 @@ app.get('/jobs', function (req, res) {
     JobRequest.find({ date_created: {$gt : expirationDate }}, function (err2, job_requests) {      
       var modified_requests, modified_postings;
 
-      if (err1 || err2) throw err1 || err2;
+      if (err1) {
+        handleError(err1, res); 
+      } else if (err2) {
+        handleError(err2, res);
+      } else {
+        var techs = _.union(
+          _.map(job_posts, function (j) { return j.technologies; }), 
+          _.map(job_requests, function (j) { return j.technologies; }
+        ));
 
-      var techs = _.union(
-        _.map(job_posts, function (j) { return j.technologies; }), 
-        _.map(job_requests, function (j) { return j.technologies; }
-      ));
-
-      res.render('jobs/index', {
-        title: 'Jobs',
-        locals: {
-          job_posts: job_posts,
-          job_requests: job_requests,
-          technologies: techs
-        }
-      });      
+        res.render('jobs/index', {
+          title: 'Jobs',
+          locals: {
+            job_posts: job_posts,
+            job_requests: job_requests,
+            technologies: techs
+          }
+        });     
+      }
     });    
   });
 });
 
+mongooseAuth.helpExpress(app);
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
