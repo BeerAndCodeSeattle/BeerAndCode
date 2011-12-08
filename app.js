@@ -33,7 +33,8 @@ PersonSchema = new Schema({
   bio           : String,
   url_slug      : String,
   languages     : [String],
-  projects      : [Project]
+  projects      : [Project],
+  active        : Boolean
 });
 
 PersonSchema.plugin(mongooseAuth, {
@@ -49,7 +50,41 @@ PersonSchema.plugin(mongooseAuth, {
       myHostname: 'http://localhost:3000',
       consumerKey: conf.twit.consumerKey,
       consumerSecret: conf.twit.consumerSecret,
-      redirectPath: '/'
+      redirectPath: '/',
+      findOrCreateUser: function (session, accessTok, accessTokSecret, twitterUser) {
+        var promise = this.Promise(),
+            self = this;
+
+        console.log(twitterUser);
+        Person.findOne(
+          { 
+            $or: 
+            [
+              { 'name': twitterUser.name },
+              { 'twitter_nick': twitterUser.screen_name }
+            ]
+          }, 
+          function (err, person) {
+          if (err) return promise.fail(err);
+
+          if (person) {
+            return promise.fulfill(person);
+          } else {
+            person = new Person();
+            person.name = twitterUser.name;
+            person.twitter_nick = twitterUser.screen_name;
+            person.bio = twitterUser.description;
+            person.active = false;
+
+            person.save(function (e, p) {
+              if (e) return promise.fail(e);
+              return promise.fulfill(p);
+            });
+          }
+        });
+
+        return promise;
+      }
     }          
   },
   password: {
@@ -71,18 +106,57 @@ PersonSchema.plugin(mongooseAuth, {
       myHostname: 'http://localhost:3000',
       appId: conf.github.appId,
       appSecret: conf.github.appSecret,
-      redirectPath: '/'
+      redirectPath: '/',
+      findOrCreateUser: function (session, accessTok, accessTokExtra, githubUser) {
+        var promise = this.Promise(),
+            self = this;
+
+        console.log(githubUser);
+       
+        Person.findOne(
+          { $or: 
+            [ 
+              { 'name': githubUser.name },
+              { 'github_nick': githubUser.login }, 
+              { 'email': githubUser.email }
+            ]
+          }, 
+          function (err, person) {
+            if (err) return promise.fail(err);
+
+            if (person) {
+              // Found an existing person
+              return promise.fulfill(person);
+            } else {
+              // Person doesn't already exist with that github info
+              person = new Person();
+              person.name = githubUser.name;
+              person.email = githubUser.email;
+              person.github_nick = githubUser.login;
+              person.active = false;
+
+              person.save(function (e, p) {
+                if (e) return promise.fail(e);
+                return promise.fulfill(p);
+              });
+            }
+          }
+        );
+
+        return promise;
+      }
     }         
   }
 });
 
 PersonSchema.pre('save', function (next) {
-  console.log(this);
   /*
   * Generate an MD5 hash of the supplied email
   * and save that as the gravatar string before saving
   */
-  this.gravatar = require('./MD5').toMD5(this.email);
+  if (this.email) {
+    this.gravatar = require('./MD5').toMD5(this.email);
+  }
 
   /*
   * Remove spaces and weirdo characters to make an addressable
@@ -171,7 +245,7 @@ JobRequest = mongoose.model('JobRequest');
 // require('./bootstrap').bootstrap(Person);
 
 var doAuth = function (req, res, next) {
-  if (req.loggedIn) {
+  if (req.loggedIn && req.user.active) {
     next();
   } else {
     res.redirect('/login');
@@ -186,7 +260,7 @@ app.get('/', function(req, res){
 });
 
 handleError = function (err, res) {
-  //res.writeHead(500, {'Content-Type': 'text/html'});
+  res.writeHead(500, {'Content-Type': 'text/html'});
   res.render('error', { locals: { err: err } });
 };
 
@@ -376,7 +450,6 @@ app.post('/jobs/createJobPost', doAuth, function (req, res) {
   job_post.headline = data.headline;
   job_post.company_name = data.company_name;
   job_post.description = data.description;
-  // job_post.category
   job_post.info_url = data.info_url;
   job_post.contact_email = data.contact_email;
   job_post.technologies = _.map(data.technologies_string.split(','), function (t) { return t.trim(); });
