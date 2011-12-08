@@ -23,6 +23,17 @@ html
       })();  
   body
     header
+      #login_area
+        - if(everyauth.loggedIn) 
+          a(href= '/people/' + everyauth.user.url_slug)= everyauth.user.name
+          |  |
+          a(href= '/logout') Log Out
+        
+        - else
+          a(href='/login') Log In
+          |  |
+          a(href='/register') Register
+      
       a(href="/")
         img(id="logo", src="/images/beer_and_code_logo.png")
       nav
