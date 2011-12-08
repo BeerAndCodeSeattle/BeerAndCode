@@ -55,7 +55,6 @@ PersonSchema.plugin(mongooseAuth, {
         var promise = this.Promise(),
             self = this;
 
-        console.log(twitterUser);
         Person.findOne(
           { 
             $or: 
@@ -111,8 +110,6 @@ PersonSchema.plugin(mongooseAuth, {
         var promise = this.Promise(),
             self = this;
 
-        console.log(githubUser);
-       
         Person.findOne(
           { $or: 
             [ 
