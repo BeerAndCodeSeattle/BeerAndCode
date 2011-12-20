@@ -1,0 +1,20 @@
+- if ('undefined' !== typeof errors && errors.length)
+  ul#errors
+    - each error in errors
+      li.error= error
+form(action='/register', method='POST').person_details
+  h1 Register
+  #name
+    label(for='name') name
+    br
+    input(type='text', name='name')
+  #email
+    label(for=everyauth.password.loginFormFieldName) email
+    br 
+    input(type='text', name=everyauth.password.loginFormFieldName, value=userParams[everyauth.password.loginFormFieldName])
+  #password
+    label(for=everyauth.password.passwordFormFieldName) password
+    br
+    input(type='password', name=everyauth.password.passwordFormFieldName)
+  #submit
+    input(type='submit') Register

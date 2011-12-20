@@ -5,3 +5,4 @@ _site/*
 node_modules
 .logs
 .pids
+public/stylesheets/style.css

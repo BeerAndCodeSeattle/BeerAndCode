@@ -1,0 +1,24 @@
+- if ('undefined' !== typeof errors && errors.length)
+  ul#errors
+    - each error in errors
+      li.error= error
+
+form(action='/login', method='POST').person_details
+  h1 Log In
+  #login
+    label(for=everyauth.password.loginFormFieldName) Email
+    br
+    input(type='text', name=everyauth.password.loginFormFieldName, value=email)
+  #password
+    label(for=everyauth.password.passwordFormFieldName) Password
+    br
+    input(type='password', name=everyauth.password.passwordFormFieldName)
+  #submit
+    input(type='submit') Login
+
+#other_logins
+  ul
+    li
+      a(href='/auth/twitter') log in with twitter
+    li
+      a(href='/auth/github') log in with github

@@ -73,6 +73,13 @@ a
 
 /** Header specific **/
 header
+  #login_area 
+    color #f4ac00
+    position absolute
+    top 8px
+    right 8px
+    a
+      color #f4ac00
   text-align center
   background-color #412919
   padding-bottom 18px
@@ -113,8 +120,10 @@ nav ul
   text-align left
   line-height 1.1em
   a
-    border-bottom: 1px dotted #161001;
-      
+    border-bottom: 1px dotted #161001
+
+/* People Stuff */
+
 .vcard 
   display inline-block
   margin 1em 1em
@@ -137,3 +146,48 @@ nav ul
 .vcard ul
   clear left
   float left
+
+form
+  input[type='text'], input[type='email'], input[type='password']
+    border none
+    padding 8px 12px
+    width 300px
+  textarea
+    border none
+    padding 8px 12px
+    width 500px
+    height 312px
+ 
+.person_details
+  text-align left
+  img
+    float right
+  label
+    font-size .8em
+  .projects_list
+    .project
+      p
+        font-style italic
+    form.new_project      
+      padding 8px
+      margin-bottom 8px
+      width 500px
+      color #fff
+      background-color #3c3c3c
+      input[type='text']
+        margin-left 8px
+        padding 4px 8px
+        width 250px
+            
+.job_form
+  text-align left
+
+.job_information
+  text-align left
+
+article.job_post, article.job_request
+  text-align left
+  .company_name 
+    font-style italic
+
+

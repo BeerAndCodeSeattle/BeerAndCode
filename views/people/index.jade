@@ -4,7 +4,8 @@ h1 People
     .vcard
       div
         img(style="float: left;", src="http://www.gravatar.com/avatar/" + person.gravatar + "?s=50&d=mm", alt="photo of ' + person.name, class="photo")
-        h2(style="float: left;").name= person.name      
+        h2(style="float: left;").name
+          a(href="/people/" + person.url_slug)= person.name      
       ul
         li
           span.irc
@@ -13,17 +14,13 @@ h1 People
         li
           span.uri
             span(class="type github") github: 
-            span.value
-              a(href="https://github.com/" + person.github, target="_blank").url= person.github
-        - if (person.github2)
-          li
-            span.uri
-              span(class="type github") github: 
+            - if (person.github_nick) 
               span.value
-                a(href="https://github.com/" + person.github2, target="_blank").url= person.github2
+                a(href="https://github.com/" + person.github_nick, target="_blank").url= person.github_nick
         li
           span.uri
             span(class="type twitter") twitter: 
-            span.value
-              a(href="http://twitter.com/" + person.twitter, target="_blank").url @#{person.twitter}
+            - if (person.twitter_nick) 
+              span.value
+                a(href="http://twitter.com/" + person.twitter_nick, target="_blank").url @#{person.twitter_nick}
   br(style="clear: left;")

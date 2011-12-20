@@ -1,0 +1,25 @@
+.person_details
+  img(src='http://www.gravatar.com/avatar/' + person.gravatar + '?s=200')
+  h1= person.name
+  section
+    h2 Bio
+    !{ person.bio }
+  section
+    h2 Languages
+    - if (person.languages.length > 0) 
+      ul
+        - each language in person.languages
+          - if (language)
+            li= language
+  h2 Projects
+  section.projects_list
+    - if (person.projects.length > 0)
+      - each project in person.projects.sort(function (a, b) { if (a.name <= b.name) { return -1; } else { return 1; } })
+        article.project
+          h3
+            a(href= project.project_url)= project.name
+          p= project.description
+    - else
+      p.project No projects added!
+        
+

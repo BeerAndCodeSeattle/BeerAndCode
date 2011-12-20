@@ -1,15 +1,16 @@
 !!! 5
 html
   head
-    title= title
+    title Beer &amp;&amp; Code Seattle
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->    
-    link(rel='stylesheet', href='stylesheets/style.css')
-
-    script(type='text/javascript', src='javascripts/jquery-1.5.2.min.js')
-    script(type='text/javascript', src='javascripts/carbonate.js')
-    script(type='text/javascript', src='javascripts/bandc.js')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    
+    script(type='text/javascript', src='/javascripts/jquery-1.5.2.min.js')
+    script(type='text/javascript', src='http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js')    
+    script(type='text/javascript', src='/javascripts/carbonate.js')
+    script(type='text/javascript', src='/javascripts/bandc.js')
     script(type='text/javascript')
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-22823508-1']);
@@ -22,8 +23,19 @@ html
       })();  
   body
     header
+      #login_area
+        - if(everyauth.loggedIn) 
+          a(href= '/people/' + everyauth.user.url_slug)= everyauth.user.name
+          |  |
+          a(href= '/logout') Log Out
+        
+        - else
+          a(href='/login') Log In
+          |  |
+          a(href='/register') Register
+      
       a(href="/")
-        img(id="logo", src="images/beer_and_code_logo.png")
+        img(id="logo", src="/images/beer_and_code_logo.png")
       nav
         ul
           li
@@ -31,5 +43,7 @@ html
           li
             a(href="/calendar") calendar
           li
-            a(href="/people") people        
+            a(href="/people") people
+          li
+            a(href="/jobs") jobs
     #content!= body

@@ -1,0 +1,17 @@
+#content
+  h2 Sign In
+  p
+  form.people#login(method='post', actions='/sessions/new')
+    div
+      label(for='person[email]') Email
+      br
+      input(name='person[email]', value=person.email || '', type='text')
+    div
+      label(for='person[password]')
+      br
+      input(name='person[password]', type='password')
+    div
+      label(for='remember_me') Remember me
+      input#remember_me(type='checkbox', name='remember_me')
+    div
+      input(type='submit', value='Sign In')
