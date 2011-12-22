@@ -73,7 +73,14 @@ PersonSchema.plugin(mongooseAuth, {
             person.name = twitterUser.name;
             person.twitter_nick = twitterUser.screen_name;
             person.bio = twitterUser.description;
-            person.active = false;
+
+            // Ok, so we're defaulting to all active accounts
+            // for now. In the future, it may be useful to 
+            // prevent anybody from signing up willy nilly
+            // When that day comes, we can make sure new accounts
+            // are inactive upon creation so they can be approved
+            // later            
+            person.active = true;
 
             person.save(function (e, p) {
               if (e) return promise.fail(e);
@@ -130,7 +137,14 @@ PersonSchema.plugin(mongooseAuth, {
               person.name = githubUser.name;
               person.email = githubUser.email;
               person.github_nick = githubUser.login;
-              person.active = false;
+
+              // Ok, so we're defaulting to all active accounts
+              // for now. In the future, it may be useful to 
+              // prevent anybody from signing up willy nilly
+              // When that day comes, we can make sure new accounts
+              // are inactive upon creation so they can be approved
+              // later
+              person.active = true;
 
               person.save(function (e, p) {
                 if (e) return promise.fail(e);
@@ -242,10 +256,18 @@ JobRequest = mongoose.model('JobRequest');
 // require('./bootstrap').bootstrap(Person);
 
 var doAuth = function (req, res, next) {
-  if (req.loggedIn && req.user.active) {
+  if (req.loggedIn) {
     next();
   } else {
     res.redirect('/login');
+  }
+};
+
+var ensureOwnsObject = function (req, res, next) {
+  if (req.params.id === req.user.url_slug) {
+    next();
+  } else {
+    res.redirect('/not_authorized');
   }
 };
 
@@ -253,6 +275,12 @@ var doAuth = function (req, res, next) {
 app.get('/', function(req, res){
   res.render('index', {
     title: 'Seattle Beer && Code'
+  });
+});
+
+app.get('/not_authorized', function (req, res) {
+  res.render('not_authorized', {
+    title: 'NONONONONONO'
   });
 });
 
@@ -271,7 +299,7 @@ app.get('/people/new', function (req, res) {
   });
 });
 
-app.get('/people/edit/:id', doAuth, function (req, res) {
+app.get('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
     if (err) {
       handleError(err, res);
@@ -289,7 +317,7 @@ app.get('/people/edit/:id', doAuth, function (req, res) {
   });
 });
 
-app.post('/people/edit/:id', doAuth, function (req, res) {
+app.post('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
   if(req.body.Save) {
     Person.findOne({ url_slug : req.params.id }, function (err, person) {
       // Perform some updating action here
@@ -312,7 +340,7 @@ app.post('/people/edit/:id', doAuth, function (req, res) {
   }  
 });
 
-app.post('/people/addProjectToPerson/:id', doAuth, function (req, res) {
+app.post('/people/addProjectToPerson/:id', doAuth, ensureOwnsObject, function (req, res) {
   Person.findOne({ url_slug : req.params.id }, function (err, person) {
     console.log(req.body);
     var project = {

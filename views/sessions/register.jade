@@ -2,6 +2,14 @@
   ul#errors
     - each error in errors
       li.error= error
+
+#other_logins
+  ul
+    li
+      a(href='/auth/twitter') register with twitter
+    li
+      a(href='/auth/github') register with github
+
 form(action='/register', method='POST').person_details
   h1 Register
   #name
