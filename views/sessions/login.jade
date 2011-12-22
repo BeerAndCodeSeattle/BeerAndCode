@@ -3,6 +3,13 @@
     - each error in errors
       li.error= error
 
+#other_logins
+  ul
+    li
+      a(href='/auth/twitter') log in with twitter
+    li
+      a(href='/auth/github') log in with github
+
 form(action='/login', method='POST').person_details
   h1 Log In
   #login
@@ -15,10 +22,3 @@ form(action='/login', method='POST').person_details
     input(type='password', name=everyauth.password.passwordFormFieldName)
   #submit
     input(type='submit') Login
-
-#other_logins
-  ul
-    li
-      a(href='/auth/twitter') log in with twitter
-    li
-      a(href='/auth/github') log in with github
