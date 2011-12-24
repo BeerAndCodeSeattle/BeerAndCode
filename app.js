@@ -5,13 +5,12 @@ var express = require('express'),
     markdown = require('markdown').markdown,
     _ = require('underscore'),
     models = require('./models'),
-
-    app,
     handleError,
     Person, 
     Project,
     JobPost, 
-    JobRequest;
+    JobRequest,
+    app;
 
 // Configuration
 app = express.createServer(
