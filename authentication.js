@@ -1,5 +1,4 @@
 var passport = require('passport'),
-    LocalStrategy = require('passport-local').Strategy,
     TwitterStrategy = require('passport-twitter').Strategy,
     GithubStrategy = require('passport-github').Strategy,
     util = require('util'),
@@ -24,14 +23,6 @@ function init(app, person) {
   app.get('/login', function(req, res) {
     res.render('sessions/login');
   });
-
-  // Password auth
-  app.post('/login', 
-    passport.authenticate('local', { failureRedirect: '/login' }),
-    function(req, res) {
-      res.redirect('/'); 
-    }
-  );
 
   // Twitter auth
   app.get('/login/twitter',
