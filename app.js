@@ -1,10 +1,11 @@
 var express = require('express'),
     mongoose = require('mongoose'),
-    mongooseAuth = require('mongoose-auth'),
     conf = require('./conf'),
     markdown = require('markdown').markdown,
     _ = require('underscore'),
     models = require('./models'),
+    passport = require('passport'),
+    LocalStrategy = require('passport-local').Strategy,
     handleError,
     Person, 
     Project,
@@ -50,7 +51,6 @@ app.configure('production', function() {
 mongoose.connect(app.set('db-uri'));
 models.defineModels(
   mongoose, 
-  mongooseAuth, 
   Project,
   Person,
   JobPost,
@@ -61,17 +61,68 @@ models.defineModels(
     app.JobRequest = JobRequest = mongoose.model('JobRequest');
 });
 
-app.configure(function () {
-  app.use(mongooseAuth.middleware());
+// BEGIN AUTH CODE
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
 });
-  
+
+passport.deserializeUser(function(id, done) {
+  Person.findById(id, function (err, user) {
+    done(err, user);
+  });
+});
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    process.nextTick(function() {
+      Person.findOne({ email:username }, function (err, user) {
+        if (err) { return done(err); }
+        if (!user) { return done(null, false); }
+        //passowrd check if (person.password != password) { return done(null, false); }
+        return done(null, user);
+      })
+    });
+  }
+));
+
+app.configure(function() {
+  app.use(passport.initialize());
+  app.use(passport.session()); // Support persistent login sessions
+});
+
 var doAuth = function (req, res, next) {
-  if (req.loggedIn) {
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  function(req, res, next) {
     next();
-  } else {
-    res.redirect('/login');
   }
 };
+
+app.dynamicHelpers({
+  user: function(req, res) { return req.user; }
+});
+
+app.get('/login', function(req, res) {
+  res.render('sessions/login');
+});
+
+// POST /login
+//   Username/password login authentication with passport
+//   Redirect to login on failure. Home on success.
+app.post('/login', 
+  passport.authenticate('local', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/'); 
+  }
+);
+
+app.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
+  }
+);
+
+// END AUTH CODE
 
 var ensureOwnsObject = function (req, res, next) {
   if (req.params.id === req.user.url_slug) {
@@ -350,6 +401,6 @@ app.get('/jobs', doAuth, function (req, res) {
   });
 });
 
-mongooseAuth.helpExpress(app);
+//mongooseAuth.helpExpress(app);
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

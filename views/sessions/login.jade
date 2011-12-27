@@ -10,15 +10,15 @@
     li
       a(href='/auth/github') log in with github
 
-form(action='/login', method='POST').person_details
+form(action='/login', method='POST')
   h1 Log In
   #login
-    label(for=everyauth.password.loginFormFieldName) Email
+    Email
     br
-    input(type='text', name=everyauth.password.loginFormFieldName, value=email)
+    input(type='text', name='username')
   #password
-    label(for=everyauth.password.passwordFormFieldName) Password
+    Password
     br
-    input(type='password', name=everyauth.password.passwordFormFieldName)
+    input(type='password', name='password')
   #submit
     input(type='submit') Login
