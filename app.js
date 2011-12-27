@@ -4,8 +4,7 @@ var express = require('express'),
     markdown = require('markdown').markdown,
     _ = require('underscore'),
     models = require('./models'),
-    passport = require('passport'),
-    LocalStrategy = require('passport-local').Strategy,
+    bacAuth = require('./authentication'),
     handleError,
     Person, 
     Project,
@@ -61,69 +60,6 @@ models.defineModels(
     app.JobRequest = JobRequest = mongoose.model('JobRequest');
 });
 
-// BEGIN AUTH CODE
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  Person.findById(id, function (err, user) {
-    done(err, user);
-  });
-});
-
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    process.nextTick(function() {
-      Person.findOne({ email:username }, function (err, user) {
-        if (err) { return done(err); }
-        if (!user) { return done(null, false); }
-        //passowrd check if (person.password != password) { return done(null, false); }
-        return done(null, user);
-      })
-    });
-  }
-));
-
-app.configure(function() {
-  app.use(passport.initialize());
-  app.use(passport.session()); // Support persistent login sessions
-});
-
-var doAuth = function (req, res, next) {
-  passport.authenticate('local', { failureRedirect: '/login' }),
-  function(req, res, next) {
-    next();
-  }
-};
-
-app.dynamicHelpers({
-  user: function(req, res) { return req.user; }
-});
-
-app.get('/login', function(req, res) {
-  res.render('sessions/login');
-});
-
-// POST /login
-//   Username/password login authentication with passport
-//   Redirect to login on failure. Home on success.
-app.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/'); 
-  }
-);
-
-app.get('/logout', function(req, res) {
-    req.logout();
-    res.redirect('/');
-  }
-);
-
-// END AUTH CODE
-
 var ensureOwnsObject = function (req, res, next) {
   if (req.params.id === req.user.url_slug) {
     next();
@@ -131,6 +67,9 @@ var ensureOwnsObject = function (req, res, next) {
     res.redirect('/not_authorized');
   }
 };
+
+// BAC Authentication setup
+bacAuth.init(app, Person);
 
 // Routes
 app.get('/', function(req, res){
@@ -160,7 +99,7 @@ app.get('/people/new', function (req, res) {
   });
 });
 
-app.get('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
+app.get('/people/edit/:id', bacAuth.doAuth, ensureOwnsObject, function (req, res) {
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
     if (err) {
       handleError(err, res);
@@ -178,7 +117,7 @@ app.get('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
   });
 });
 
-app.post('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
+app.post('/people/edit/:id', bacAuth.doAuth, ensureOwnsObject, function (req, res) {
   if(req.body.Save) {
     Person.findOne({ url_slug : req.params.id }, function (err, person) {
       // Perform some updating action here
@@ -201,7 +140,7 @@ app.post('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
   }  
 });
 
-app.post('/people/addProjectToPerson/:id', doAuth, ensureOwnsObject, function (req, res) {
+app.post('/people/addProjectToPerson/:id', bacAuth.doAuth, ensureOwnsObject, function (req, res) {
   Person.findOne({ url_slug : req.params.id }, function (err, person) {
     console.log(req.body);
     var project = {
@@ -228,7 +167,7 @@ app.post('/people/addProjectToPerson/:id', doAuth, ensureOwnsObject, function (r
   });
 });
 
-app.post('/people/new', doAuth, function (req, res) {
+app.post('/people/new', bacAuth.doAuth, function (req, res) {
   console.dir(req.body);
   var person = new Person();
   person.name = req.body.person.name;
@@ -247,7 +186,7 @@ app.post('/people/new', doAuth, function (req, res) {
   });  
 });
 
-app.get('/people/:id', doAuth, function (req, res) {
+app.get('/people/:id', bacAuth.doAuth, function (req, res) {
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
     if (err) {    
       handleError(err, res);
@@ -267,7 +206,7 @@ app.get('/people/:id', doAuth, function (req, res) {
   });
 });
 
-app.get('/people/getGithubProjects/:ghid', doAuth, function (req, res) {
+app.get('/people/getGithubProjects/:ghid', bacAuth.doAuth, function (req, res) {
   // Download and return a list of public Github projects
   // for a user
   var options = {};
@@ -324,13 +263,13 @@ app.get('/calendar', function (req, res) {
 });
 
 // Jobs routes
-app.get('/jobs/createJobPost', doAuth, function (req, res) {
+app.get('/jobs/createJobPost', bacAuth.doAuth, function (req, res) {
   res.render('jobs/new_job_post', { 
     title: 'New Job Post'
   });
 });
 
-app.post('/jobs/createJobPost', doAuth, function (req, res) {
+app.post('/jobs/createJobPost', bacAuth.doAuth, function (req, res) {
   var data = req.body.job;
   var job_post = new JobPost();
   job_post.headline = data.headline;
@@ -349,7 +288,7 @@ app.post('/jobs/createJobPost', doAuth, function (req, res) {
   });
 });
 
-app.get('/jobs/jobPost/:id', doAuth, function (req, res) {
+app.get('/jobs/jobPost/:id', bacAuth.doAuth, function (req, res) {
   JobPost.findById(req.params.id, function(err, job) {
     res.render('jobs/job_post', {
       title: 'Job Post',
@@ -360,17 +299,17 @@ app.get('/jobs/jobPost/:id', doAuth, function (req, res) {
   });
 });
 
-app.get('/jobs/createJobRequest', doAuth, function (req, res) {
+app.get('/jobs/createJobRequest', bacAuth.doAuth, function (req, res) {
   res.render('jobs/new_job_request', {
     title: 'New Job Request'
   });
 });
 
-app.post('/jobs/createJobRequest', doAuth, function (req, res) {
+app.post('/jobs/createJobRequest', bacAuth.doAuth, function (req, res) {
   res.redirect('/');
 });
 
-app.get('/jobs', doAuth, function (req, res) {
+app.get('/jobs', bacAuth.doAuth, function (req, res) {
   var currentDate = new Date();
   var expirationDate = currentDate.setDate(currentDate.getDate() - 30);
 
