@@ -4,21 +4,14 @@
       li.error= error
 
 #other_logins
-  ul
-    li
-      a(href='/login/twitter') log in with twitter
-    li
-      a(href='/login/github') log in with github
-
-form(action='/login', method='POST')
   h1 Log In
-  #login
-    Email
-    br
-    input(type='text', name='username')
-  #password
-    Password
-    br
-    input(type='password', name='password')
-  #submit
-    input(type='submit') Login
+  p Already have an account with one of these fine providers? Hit the button to log in or create a new account with Beer&&Code. 
+  .loginMethod
+    a(href='/login/twitter') 
+      img(src='/images/twitter.png', alt='log in with twitter')
+  .loginMethod
+    a(href='/login/github')
+      img(src='/images/github.png', alt='log in with github')
+    
+div
+  a(href='') TODO: Hook this up to twitter: I can't believe _favorite provider here_ isn't listed!
