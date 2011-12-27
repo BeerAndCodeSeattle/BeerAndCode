@@ -10,6 +10,8 @@
     "underscore": "*",
     "markdown": "*",
     "passport":"*",
-    "passport-local":"*"
+    "passport-local":"*",
+    "passport-twitter":"*",
+    "passport-github":"*"
   }
 }

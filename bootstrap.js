@@ -46,7 +46,7 @@ people.push({
   name : 'Dustin Venegas',
   email : 'dustin.venegas@gmail.com',
   irc : 'electricEmu',
-  twitter : 'dustinVenegas',
+  twitter : 'dustinvenegas',
   github : 'DustinVenegas',
   bio : "venegas vio",
   languages : ['javascript', 'node', 'c#', 'delphi', 'css']
@@ -123,10 +123,12 @@ for(var i=0; i<people.length; i++) {
         p.name = dude.name;
         p.email = dude.email;
         p.irc = dude.irc;
-        p.twitter = dude.twitter;
-        p.github = dude.github;
+        p.twitter_nick = dude.twitter;
+        p.github_nick = dude.github;
         p.bio = dude.bio;
         p.languages = dude.languages;
+        p.projects = [],
+        p.active = true
 
         p.save(function (err) {
           if (err) { throw err; }
