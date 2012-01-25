@@ -7,7 +7,7 @@
     "jade": ">= 0.0.1",
     "stylus": ">= 0.13.4",
     "mongoose": ">= 1.4.0",
-    "mongoose-auth": ">= 0.0.1",
+    "mongoose-auth": "= 0.0.11",
     "underscore": ">= 1.1.6",
     "markdown": ">= 0.2.1"
   }
