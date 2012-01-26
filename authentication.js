@@ -112,9 +112,9 @@ passport.use(new GithubStrategy({
     callbackURL: 'http://localhost:3000/login/github/callback'
   },
   function(accessToken, refreshToken, profile, done) {
-    console.log(accessToken);
-    console.log(refreshToken);
-    console.log(util.inspect(profile));
+    // console.log(accessToken);
+    // console.log(refreshToken);
+    // console.log(util.inspect(profile));
 
     Person.findOne( {github_nick: profile.username }, function(err, person) {
       if (err) {
@@ -122,17 +122,12 @@ passport.use(new GithubStrategy({
       }
 
       if (person) {
-        console.log('we found a person');
         done(null, person);
       } else {
-        console.log('we are creating a person');
         person = new Person();
         person.name = profile.displayName;
         if (profile.emails.length > 0) {
-          console.log('emails received');
-          console.log(profile.emails);
           person.email = profile.emails[0].value;
-          console.log('email is: ', person.email);
         }
         person.github_nick = profile.username;
         person.active = true;
@@ -151,5 +146,23 @@ var doAuth = function (req, res, next) {
   res.redirect('/login');
 };
 
+var currentlyLoggedInPerson = function (req, res, next) {
+  if (req.session) {
+    Person.findById(req.session.passport.user, function (err, person) {
+      if (err) { 
+        // res.writeHead(500, {'Content-Type': 'text/html'});
+        // res.render('error', { locals: { err: err } });
+      } else {
+        req.current_person = person;
+      }
+      next();
+    });
+  } else {
+    req.current_person = null;
+    next();
+  }
+};
+
 exports.init = init;
 exports.doAuth = doAuth;
+exports.currentlyLoggedInPerson = currentlyLoggedInPerson;

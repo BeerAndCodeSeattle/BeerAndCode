@@ -1,6 +1,9 @@
 .person_details
   img(src='http://www.gravatar.com/avatar/' + person.gravatar + '?s=200')
   h1= person.name
+  - if (editable)
+    p
+      a(href='/people/edit/' + person.url_slug) Edit your profile 
   section
     h2 Bio
     !{ person.bio }

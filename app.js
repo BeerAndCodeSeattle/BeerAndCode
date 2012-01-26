@@ -142,7 +142,6 @@ app.post('/people/edit/:id', bacAuth.doAuth, ensureOwnsObject, function (req, re
 
 app.post('/people/addProjectToPerson/:id', bacAuth.doAuth, ensureOwnsObject, function (req, res) {
   Person.findOne({ url_slug : req.params.id }, function (err, person) {
-    console.log(req.body);
     var project = {
       name: req.body.project_name,
       project_url: req.body.project_url,
@@ -157,18 +156,13 @@ app.post('/people/addProjectToPerson/:id', bacAuth.doAuth, ensureOwnsObject, fun
         });
         res.end('OK');        
       } else {
-        console.log(err);
-        res.writeHead(500, {
-          'Content-Type': 'text/plain'
-        });
-        res.end('ERROR: ' + err);
+        handleError(err, res);
       }
     });
   });
 });
 
 app.post('/people/new', bacAuth.doAuth, function (req, res) {
-  console.dir(req.body);
   var person = new Person();
   person.name = req.body.person.name;
   person.email = req.body.person.email;
@@ -186,7 +180,9 @@ app.post('/people/new', bacAuth.doAuth, function (req, res) {
   });  
 });
 
-app.get('/people/:id', bacAuth.doAuth, function (req, res) {
+app.get('/people/:id', bacAuth.doAuth, bacAuth.currentlyLoggedInPerson, function (req, res) {
+  var show_edit = false;
+
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
     if (err) {    
       handleError(err, res);
@@ -196,9 +192,15 @@ app.get('/people/:id', bacAuth.doAuth, function (req, res) {
         person.bio = markdown.toHTML(person.bio);    
       }
 
+      // Is the person viewing the owner of the profile?
+      if (req.current_person.id == person.id) {
+        show_edit = true;
+      }      
+
       res.render('people/show', {
         title: person.name, 
         locals: {
+          editable: show_edit,
           person: person
         }
       });
