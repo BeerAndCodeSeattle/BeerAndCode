@@ -5,13 +5,11 @@
 
 #other_logins
   h1 Log In
-  p Already have an account with one of these fine providers? Hit the button to log in or create a new account with Beer&&Code. 
-  .loginMethod
-    a(href='/login/twitter') 
-      img(src='/images/twitter.png', alt='log in with twitter')
-  .loginMethod
-    a(href='/login/github')
-      img(src='/images/github.png', alt='log in with github')
-    
-div
-  TODO: Hook this up to twitter: I can't believe _favorite provider here_ isn't listed!
+  #login_methods
+    .loginMethod
+      a(href='/login/twitter') 
+        img(src='/images/twitter.png', alt='log in with twitter')
+    .loginMethod
+      a(href='/login/github')
+        img(src='/images/github.png', alt='log in with github')
+    br(style='clear: both;')

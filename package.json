@@ -10,8 +10,8 @@
     "mongoose-auth": "= 0.0.11",
     "underscore": ">= 1.1.6",
     "markdown": ">= 0.2.1",
-    "passport":"*",
-    "passport-twitter":"*",
-    "passport-github":"*"
+    "passport":"= 0.1.5",
+    "passport-twitter":"= 0.1.0",
+    "passport-github":"= 0.1.0"
   }
 }

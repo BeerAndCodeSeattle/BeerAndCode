@@ -34,6 +34,11 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section
   display block
 
+image-shadow()
+  -moz-box-shadow 0px 3px 3px #666
+  -webkit-box-shadow 0px 3px 3px #666
+  box-shadow 0px 3px 3px #666
+
 body 
   background-color #f3f4eb;
   font-family 'Arvo', arial, serif
@@ -95,17 +100,6 @@ header
   a
     color #f4ac00
 
-#other_logins
-  height 200px
-  width 500px
-  margin-top 20px
-  display block
-  margin 0 auto
-
-.loginMethod
-  margin-left 100px
-  float left
-
 /* Calendar area */
 #calendar_container
   text-align center
@@ -140,11 +134,20 @@ nav ul
   margin 0 auto
   text-align center
 
-  img
-    -moz-box-shadow 0px 3px 3px #666
-    -webkit-box-shadow 0px 3px 3px #666
-    box-shadow 0px 3px 3px #666
+#other_logins
+  height 200px
+  width 500px
+  margin-top 20px
+  display block
+  margin 0 auto
 
+#login_methods
+  text-align center
+  margin 0 auto
+
+.loginMethod
+  display inline-block
+  margin 0 50px
 
 #content_text
   text-align left
@@ -155,6 +158,7 @@ nav ul
 #home_image
   float right
   margin-left 16px
+  image-shadow()
 
 #motto
   padding-top 16px
@@ -192,9 +196,10 @@ nav ul
   -moz-box-shadow 0px 3px 3px #666
   -webkit-box-shadow 0px 3px 3px #666
   box-shadow 0px 3px 3px #666
-    
-.vcard .photo
-  float left
+  img
+    float left
+    image-shadow()
+
 .vcard .name 
   float left
   vertical-align middle
@@ -219,6 +224,7 @@ form
   text-align left
   img
     float right
+    image-shadow()
   label
     font-size .8em
   .projects_list
