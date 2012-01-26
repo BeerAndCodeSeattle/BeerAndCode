@@ -24,8 +24,8 @@ html
   body
     header
       #login_area
-        - if(everyauth.loggedIn) 
-          a(href= '/people/' + everyauth.user.url_slug)= everyauth.user.name
+        - if(user != null) 
+          a(href= '/people/' + user.url_slug)= user.name
           |  |
           a(href= '/logout') Log Out
         
