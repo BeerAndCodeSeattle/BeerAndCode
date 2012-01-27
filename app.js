@@ -36,15 +36,15 @@ app.configure('production', function(){
 });
 
 app.configure('development', function() {
-  app.set('db-uri', 'mongodb://localhost/bandc206-dev');
+  app.set('db-uri', process.env.MONGOHQ_URL || 'mongodb://localhost/bandc206-dev');
 });
 
 app.configure('test', function() {
-  app.set('db-uri', 'mongodb://localhost/bandc206-test');
+  app.set('db-uri', process.env.MONGOHQ_URL || 'mongodb://localhost/bandc206-test');
 });
 
 app.configure('production', function() {
-  app.set('db-uri', 'mongodb://localhost/bandc206-production');
+  app.set('db-uri', process.env.MONGOHQ_URL || 'mongodb://localhost/bandc206-production');
 });
 
 mongoose.connect(app.set('db-uri'));
