@@ -4,6 +4,8 @@ var passport = require('passport'),
     util = require('util'),
     Person;
 
+var callback_url_base = 'http://bandc-demo.herokuapp.com';
+
 function init(app, person) {
   Person = person;
 
@@ -83,7 +85,7 @@ passport.deserializeUser(function(id, done) {
 passport.use(new TwitterStrategy({
     consumerKey: 'ur4VS9QWRHIweQInzlIorA',
     consumerSecret: 'alAEuLrC9vLnH56y5O777lMzDpXcPp1SDVvQjKAvfA',
-    callbackURL: "http://localhost:3000/login/twitter/callback"
+    callbackURL: callback_url_base + '/login/twitter/callback'
   },
   function(token, tokenSecret, profile, done) {
     Person.findOne( {twitter_nick: profile.username }, function (err, person) {
@@ -109,7 +111,7 @@ passport.use(new TwitterStrategy({
 passport.use(new GithubStrategy({
     clientID: 'f6257c6c3138ac264cfc',
     clientSecret: '863b5b48e3cc779d56e3a18b7ad3be2bda8e3da3',
-    callbackURL: 'http://localhost:3000/login/github/callback'
+    callbackURL: callback_url_base + '/login/github/callback'
   },
   function(accessToken, refreshToken, profile, done) {
     // console.log(accessToken);
