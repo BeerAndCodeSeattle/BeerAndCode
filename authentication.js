@@ -2,7 +2,7 @@ var passport = require('passport'),
     TwitterStrategy = require('passport-twitter').Strategy,
     GithubStrategy = require('passport-github').Strategy,
     util = require('util'),
-    conf = require('conf'),
+    conf = require('./conf'),
     Person;
 
 var callback_url_base = 'http://bandc-demo.herokuapp.com';
