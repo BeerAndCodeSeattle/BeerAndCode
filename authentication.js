@@ -2,6 +2,7 @@ var passport = require('passport'),
     TwitterStrategy = require('passport-twitter').Strategy,
     GithubStrategy = require('passport-github').Strategy,
     util = require('util'),
+    conf = require('conf'),
     Person;
 
 var callback_url_base = 'http://bandc-demo.herokuapp.com';
@@ -83,8 +84,8 @@ passport.deserializeUser(function(id, done) {
 
 // TODO: replace these
 passport.use(new TwitterStrategy({
-    consumerKey: 'ur4VS9QWRHIweQInzlIorA',
-    consumerSecret: 'alAEuLrC9vLnH56y5O777lMzDpXcPp1SDVvQjKAvfA',
+    consumerKey: conf.twit.consumerKey,
+    consumerSecret: conf.twit.consumerSecret,
     callbackURL: callback_url_base + '/login/twitter/callback'
   },
   function(token, tokenSecret, profile, done) {
@@ -109,8 +110,8 @@ passport.use(new TwitterStrategy({
 ));
 
 passport.use(new GithubStrategy({
-    clientID: 'f6257c6c3138ac264cfc',
-    clientSecret: '863b5b48e3cc779d56e3a18b7ad3be2bda8e3da3',
+    clientID: conf.github.appId,
+    clientSecret: conf.github.appSecret,
     callbackURL: callback_url_base + '/login/github/callback'
   },
   function(accessToken, refreshToken, profile, done) {
