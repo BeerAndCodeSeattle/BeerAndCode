@@ -137,6 +137,8 @@ app.post('/people/edit/:id', bacAuth.doAuth, ensureOwnsObject, function (req, re
         }
       });
     });
+  } else {
+    res.redirect('/people/' + req.params.id);
   }  
 });
 
