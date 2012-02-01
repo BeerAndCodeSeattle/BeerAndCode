@@ -36,13 +36,11 @@ exports.defineModels = function (
   });
 
   PersonSchema.pre('save', function (next) {
-    console.log('PRE SAVE IS EXECUTING');
     /*
     * Generate an MD5 hash of the supplied email
     * and save that as the gravatar string before saving
     */
     if (this.email) {
-      console.log('FOUND AN EMAIL. MD5 GOOOOO');
       this.gravatar = require('./MD5').toMD5(this.email);
     }
 

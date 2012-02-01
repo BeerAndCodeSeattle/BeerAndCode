@@ -97,12 +97,13 @@ passport.use(new TwitterStrategy({
         done(null, person); 
       } else { 
         person = new Person();
-        person.twitter_nick = profile.screenName;
+        person.name = profile.username;
+        person.twitter_nick = profile.username;
         person.active = true;
 
-        person.save(function (err, person) {
+        person.save(function (err, p) {
           if (err) { return done(err, null); }
-          return done(null, person);
+          return done(null, p);
         });
       }
     });
@@ -115,10 +116,6 @@ passport.use(new GithubStrategy({
     callbackURL: callback_url_base + '/login/github/callback'
   },
   function(accessToken, refreshToken, profile, done) {
-    // console.log(accessToken);
-    // console.log(refreshToken);
-    // console.log(util.inspect(profile));
-
     Person.findOne( {github_nick: profile.username }, function(err, person) {
       if (err) {
         return done(err, null);

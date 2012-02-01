@@ -129,11 +129,11 @@ app.post('/people/edit/:id', bacAuth.doAuth, ensureOwnsObject, function (req, re
       person.bio = req.body.person.bio;
       person.languages = _.map(req.body.person.language_string.split(','), function (s) { return s.replace(/\s/g, ''); });
 
-      person.save(function (err) {
+      person.save(function (err, p) {
         if (err) {
           handleError(err, res);
         } else {
-          res.redirect('/people/' + req.params.id);
+          res.redirect('/people/' + p.url_slug);
         }
       });
     });
