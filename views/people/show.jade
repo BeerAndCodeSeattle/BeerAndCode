@@ -20,7 +20,7 @@
       - each project in person.projects.sort(function (a, b) { if (a.name <= b.name) { return -1; } else { return 1; } })
         article.project
           h3
-            a(href= project.project_url)= project.name
+            a(href= project.project_url, target='_blank')= project.name
           p= project.description
     - else
       p.project No projects added!
