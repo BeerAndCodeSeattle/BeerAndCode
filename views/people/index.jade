@@ -8,20 +8,22 @@ h1 People
           h2(style="float: left;").name
             a(href="/people/" + person.url_slug)= person.name      
         ul
-          li
-            span.irc
-              span(class="type irc") irc: 
-              span.value= person.irc
-          li
-            span.uri
-              span(class="type github") github: 
-              - if (person.github_nick) 
-                span.value
-                  a(href="https://github.com/" + person.github_nick, target="_blank").url= person.github_nick
-          li
-            span.uri
-              span(class="type twitter") twitter: 
-              - if (person.twitter_nick) 
-                span.value
-                  a(href="http://twitter.com/" + person.twitter_nick, target="_blank").url @#{person.twitter_nick}
+          - if (person.irc)
+            li
+              span.irc
+                span(class="type irc") irc: 
+                span.value= person.irc
+          - if (person.github_nick)
+            li
+              span.uri
+                span(class="type github") github: 
+                  span.value
+                    a(href="https://github.com/" + person.github_nick, target="_blank").url= person.github_nick
+          - if (person.twitter_nick)
+            li
+              span.uri
+                span(class="type twitter") twitter: 
+                - if (person.twitter_nick) 
+                  span.value
+                    a(href="http://twitter.com/" + person.twitter_nick, target="_blank").url @#{person.twitter_nick}
     br(style="clear: left;")
