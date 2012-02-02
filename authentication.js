@@ -5,7 +5,7 @@ var passport = require('passport'),
     conf = require('./conf'),
     Person;
 
-var callback_url_base = 'http://bandc-demo.herokuapp.com';
+var callback_url_base = 'http://seattle.beerandcode.org';
 
 function init(app, person) {
   Person = person;
