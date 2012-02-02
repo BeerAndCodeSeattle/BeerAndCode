@@ -1,10 +1,10 @@
 var express = require('express'),
     mongoose = require('mongoose'),
-    mongooseAuth = require('mongoose-auth'),
     conf = require('./conf'),
     markdown = require('markdown').markdown,
     _ = require('underscore'),
     models = require('./models'),
+    bacAuth = require('./authentication'),
     handleError,
     Person, 
     Project,
@@ -36,21 +36,20 @@ app.configure('production', function(){
 });
 
 app.configure('development', function() {
-  app.set('db-uri', 'mongodb://localhost/bandc206-dev');
+  app.set('db-uri', process.env.MONGOHQ_URL || 'mongodb://localhost/bandc206-dev');
 });
 
 app.configure('test', function() {
-  app.set('db-uri', 'mongodb://localhost/bandc206-test');
+  app.set('db-uri', process.env.MONGOHQ_URL || 'mongodb://localhost/bandc206-test');
 });
 
 app.configure('production', function() {
-  app.set('db-uri', 'mongodb://localhost/bandc206-production');
+  app.set('db-uri', process.env.MONGOHQ_URL || 'mongodb://localhost/bandc206-production');
 });
 
 mongoose.connect(app.set('db-uri'));
 models.defineModels(
   mongoose, 
-  mongooseAuth, 
   Project,
   Person,
   JobPost,
@@ -60,19 +59,7 @@ models.defineModels(
     app.JobPost = JobPost = mongoose.model('JobPost');
     app.JobRequest = JobRequest = mongoose.model('JobRequest');
 });
-
-app.configure(function () {
-  app.use(mongooseAuth.middleware());
-});
-  
-var doAuth = function (req, res, next) {
-  if (req.loggedIn) {
-    next();
-  } else {
-    res.redirect('/login');
-  }
-};
-
+ 
 var ensureOwnsObject = function (req, res, next) {
   if (req.params.id === req.user.url_slug) {
     next();
@@ -80,6 +67,9 @@ var ensureOwnsObject = function (req, res, next) {
     res.redirect('/not_authorized');
   }
 };
+
+// BAC Authentication setup
+bacAuth.init(app, Person);
 
 // Routes
 app.get('/', function(req, res){
@@ -109,7 +99,7 @@ app.get('/people/new', function (req, res) {
   });
 });
 
-app.get('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
+app.get('/people/edit/:id', bacAuth.doAuth, ensureOwnsObject, function (req, res) {
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
     if (err) {
       handleError(err, res);
@@ -127,7 +117,7 @@ app.get('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
   });
 });
 
-app.post('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
+app.post('/people/edit/:id', bacAuth.doAuth, ensureOwnsObject, function (req, res) {
   if(req.body.Save) {
     Person.findOne({ url_slug : req.params.id }, function (err, person) {
       // Perform some updating action here
@@ -139,20 +129,21 @@ app.post('/people/edit/:id', doAuth, ensureOwnsObject, function (req, res) {
       person.bio = req.body.person.bio;
       person.languages = _.map(req.body.person.language_string.split(','), function (s) { return s.replace(/\s/g, ''); });
 
-      person.save(function (err) {
+      person.save(function (err, p) {
         if (err) {
           handleError(err, res);
         } else {
-          res.redirect('/people/' + req.params.id);
+          res.redirect('/people/' + p.url_slug);
         }
       });
     });
+  } else {
+    res.redirect('/people/' + req.params.id);
   }  
 });
 
-app.post('/people/addProjectToPerson/:id', doAuth, ensureOwnsObject, function (req, res) {
+app.post('/people/addProjectToPerson/:id', bacAuth.doAuth, ensureOwnsObject, function (req, res) {
   Person.findOne({ url_slug : req.params.id }, function (err, person) {
-    console.log(req.body);
     var project = {
       name: req.body.project_name,
       project_url: req.body.project_url,
@@ -167,18 +158,13 @@ app.post('/people/addProjectToPerson/:id', doAuth, ensureOwnsObject, function (r
         });
         res.end('OK');        
       } else {
-        console.log(err);
-        res.writeHead(500, {
-          'Content-Type': 'text/plain'
-        });
-        res.end('ERROR: ' + err);
+        handleError(err, res);
       }
     });
   });
 });
 
-app.post('/people/new', doAuth, function (req, res) {
-  console.dir(req.body);
+app.post('/people/new', bacAuth.doAuth, function (req, res) {
   var person = new Person();
   person.name = req.body.person.name;
   person.email = req.body.person.email;
@@ -196,7 +182,9 @@ app.post('/people/new', doAuth, function (req, res) {
   });  
 });
 
-app.get('/people/:id', doAuth, function (req, res) {
+app.get('/people/:id', bacAuth.doAuth, bacAuth.currentlyLoggedInPerson, function (req, res) {
+  var show_edit = false;
+
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
     if (err) {    
       handleError(err, res);
@@ -206,9 +194,15 @@ app.get('/people/:id', doAuth, function (req, res) {
         person.bio = markdown.toHTML(person.bio);    
       }
 
+      // Is the person viewing the owner of the profile?
+      if (req.current_person.id == person.id) {
+        show_edit = true;
+      }      
+
       res.render('people/show', {
         title: person.name, 
         locals: {
+          editable: show_edit,
           person: person
         }
       });
@@ -216,7 +210,7 @@ app.get('/people/:id', doAuth, function (req, res) {
   });
 });
 
-app.get('/people/getGithubProjects/:ghid', doAuth, function (req, res) {
+app.get('/people/getGithubProjects/:ghid', bacAuth.doAuth, function (req, res) {
   // Download and return a list of public Github projects
   // for a user
   var options = {};
@@ -273,13 +267,13 @@ app.get('/calendar', function (req, res) {
 });
 
 // Jobs routes
-app.get('/jobs/createJobPost', doAuth, function (req, res) {
+app.get('/jobs/createJobPost', bacAuth.doAuth, function (req, res) {
   res.render('jobs/new_job_post', { 
     title: 'New Job Post'
   });
 });
 
-app.post('/jobs/createJobPost', doAuth, function (req, res) {
+app.post('/jobs/createJobPost', bacAuth.doAuth, function (req, res) {
   var data = req.body.job;
   var job_post = new JobPost();
   job_post.headline = data.headline;
@@ -298,7 +292,7 @@ app.post('/jobs/createJobPost', doAuth, function (req, res) {
   });
 });
 
-app.get('/jobs/jobPost/:id', doAuth, function (req, res) {
+app.get('/jobs/jobPost/:id', bacAuth.doAuth, function (req, res) {
   JobPost.findById(req.params.id, function(err, job) {
     res.render('jobs/job_post', {
       title: 'Job Post',
@@ -309,17 +303,17 @@ app.get('/jobs/jobPost/:id', doAuth, function (req, res) {
   });
 });
 
-app.get('/jobs/createJobRequest', doAuth, function (req, res) {
+app.get('/jobs/createJobRequest', bacAuth.doAuth, function (req, res) {
   res.render('jobs/new_job_request', {
     title: 'New Job Request'
   });
 });
 
-app.post('/jobs/createJobRequest', doAuth, function (req, res) {
+app.post('/jobs/createJobRequest', bacAuth.doAuth, function (req, res) {
   res.redirect('/');
 });
 
-app.get('/jobs', doAuth, function (req, res) {
+app.get('/jobs', bacAuth.doAuth, function (req, res) {
   var currentDate = new Date();
   var expirationDate = currentDate.setDate(currentDate.getDate() - 30);
 
@@ -350,6 +344,6 @@ app.get('/jobs', doAuth, function (req, res) {
   });
 });
 
-mongooseAuth.helpExpress(app);
-app.listen(3000);
+var port = process.env.PORT || 3000;
+app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

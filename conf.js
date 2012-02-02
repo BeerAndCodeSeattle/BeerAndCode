@@ -1,5 +1,6 @@
 module.exports = {
   // https://dev.twitter.com/apps/1290537/show
+  // localhost: http://goo.gl/5oIR
   twit: {
     consumerKey: 'ur4VS9QWRHIweQInzlIorA',
     consumerSecret: 'alAEuLrC9vLnH56y5O777lMzDpXcPp1SDVvQjKAvfA'

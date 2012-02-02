@@ -34,6 +34,11 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section
   display block
 
+image-shadow()
+  -moz-box-shadow 0px 3px 3px #666
+  -webkit-box-shadow 0px 3px 3px #666
+  box-shadow 0px 3px 3px #666
+
 body 
   background-color #f3f4eb;
   font-family 'Arvo', arial, serif
@@ -61,6 +66,14 @@ table
 a, h1, h2, h3, h4
   color #161001
 
+h1, h2
+  -moz-text-shadow 0px 1px 2px #666
+  -webkit-text-shadow 0px 1px 2px #666
+  text-shadow 0px 1px 2px #666
+
+h2
+  margin-top 1.1em
+
 li
   margin-bottom 6px
 
@@ -82,16 +95,14 @@ header
 #login_area 
   color #f4ac00
   position absolute
-  top 8px
-  right 8px
+  top 16px
+  right 20px
   a
     color #f4ac00
 
-#other_logins
-  height 240px
-  margin-top 48px
-  border-left 1px solid #412919
-  float right
+/* Calendar area */
+#calendar_container
+  text-align center
 
 /* Nav */
 nav ul
@@ -119,9 +130,24 @@ nav ul
 
 /* Content */
 #content
-  width 55%
+  width 900px
   margin 0 auto
   text-align center
+
+#other_logins
+  height 200px
+  width 500px
+  margin-top 20px
+  display block
+  margin 0 auto
+
+#login_methods
+  text-align center
+  margin 0 auto
+
+.loginMethod
+  display inline-block
+  margin 0 50px
 
 #content_text
   text-align left
@@ -129,22 +155,51 @@ nav ul
   a
     border-bottom: 1px dotted #161001
 
+#home_image
+  float right
+  margin-left 16px
+  image-shadow()
+
+#motto
+  padding-top 16px
+  text-align center
+  clear right
+  h2
+    margin-bottom 24px
+  
+#channels
+  text-align center
+  ul
+    padding 0
+    list-style none
+    li
+      display inline-block
+      padding 0
+      margin 0 12px
+  p
+    clear both
+
+
 /* People Stuff */
 
+#people_listing
+  text-align center
+  
 .vcard 
+  text-align left
   display inline-block
   margin 1em 1em
   padding 12px
   width 310px
   height 180px
   background-color #fff
-  -moz-box-shadow 3px 3px 3px #666
-  -webkit-box-shadow 3px 3px 3px #666
-  box-shadow 3px 3px 3px #666
-  float left
-    
-.vcard .photo
-  float left
+  -moz-box-shadow 0px 3px 3px #666
+  -webkit-box-shadow 0px 3px 3px #666
+  box-shadow 0px 3px 3px #666
+  img
+    float left
+    image-shadow()
+
 .vcard .name 
   float left
   vertical-align middle
@@ -169,6 +224,7 @@ form
   text-align left
   img
     float right
+    image-shadow()
   label
     font-size .8em
   .projects_list

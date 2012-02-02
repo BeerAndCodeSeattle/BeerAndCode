@@ -7,7 +7,6 @@ var MD5 = require('./MD5'),
 
 exports.defineModels = function (
     mongoose, 
-    mongooseAuth, 
     Project,
     Person,
     JobPost,
@@ -23,6 +22,7 @@ exports.defineModels = function (
 
   PersonSchema = new Schema({
     name          : String,
+    password      : String,
     email         : String,
     gravatar      : String, // MD5 hash based on email
     irc           : String,
@@ -33,129 +33,6 @@ exports.defineModels = function (
     languages     : [String],
     projects      : [Project],
     active        : Boolean
-  });
-
-  PersonSchema.plugin(mongooseAuth, {
-    everymodule: {
-      everyauth: {
-        User: function () {
-          return Person;
-        }
-      }
-    }, 
-    twitter: {
-      everyauth: {
-        myHostname: 'http://localhost:3000',
-        consumerKey: conf.twit.consumerKey,
-        consumerSecret: conf.twit.consumerSecret,
-        redirectPath: '/',
-        findOrCreateUser: function (session, accessTok, accessTokSecret, twitterUser) {
-          var promise = this.Promise(),
-              self = this;
-
-          Person.findOne(
-            { 
-              $or: 
-              [
-                { 'name': twitterUser.name },
-                { 'twitter_nick': twitterUser.screen_name }
-              ]
-            }, 
-            function (err, person) {
-            if (err) return promise.fail(err);
-
-            if (person) {
-              return promise.fulfill(person);
-            } else {
-              person = new Person();
-              person.name = twitterUser.name;
-              person.twitter_nick = twitterUser.screen_name;
-              person.bio = twitterUser.description;
-
-              // Ok, so we're defaulting to all active accounts
-              // for now. In the future, it may be useful to 
-              // prevent anybody from signing up willy nilly
-              // When that day comes, we can make sure new accounts
-              // are inactive upon creation so they can be approved
-              // later            
-              person.active = true;
-
-              person.save(function (e, p) {
-                if (e) return promise.fail(e);
-                return promise.fulfill(p);
-              });
-            }
-          });
-
-          return promise;
-        }
-      }          
-    },
-    password: {
-      loginWith: 'email',
-      extraParams: { name: String },
-      everyauth: {
-        getLoginPath: '/login',
-        postLoginPath: '/login',
-        loginView: 'sessions/login.jade',
-        getRegisterPath: '/register',
-        postRegisterPath: '/register',
-        registerView: 'sessions/register.jade',
-        loginSuccessRedirect: '/',
-        registerSuccessRedirect: '/'
-      }       
-    },
-    github: {
-      everyauth: {
-        myHostname: 'http://localhost:3000',
-        appId: conf.github.appId,
-        appSecret: conf.github.appSecret,
-        redirectPath: '/',
-        findOrCreateUser: function (session, accessTok, accessTokExtra, githubUser) {
-          var promise = this.Promise(),
-              self = this;
-
-          Person.findOne(
-            { $or: 
-              [ 
-                { 'name': githubUser.name },
-                { 'github_nick': githubUser.login }, 
-                { 'email': githubUser.email }
-              ]
-            }, 
-            function (err, person) {
-              if (err) return promise.fail(err);
-
-              if (person) {
-                // Found an existing person
-                return promise.fulfill(person);
-              } else {
-                // Person doesn't already exist with that github info
-                person = new Person();
-                person.name = githubUser.name;
-                person.email = githubUser.email;
-                person.github_nick = githubUser.login;
-
-                // Ok, so we're defaulting to all active accounts
-                // for now. In the future, it may be useful to 
-                // prevent anybody from signing up willy nilly
-                // When that day comes, we can make sure new accounts
-                // are inactive upon creation so they can be approved
-                // later
-                person.active = true;
-
-                person.save(function (e, p) {
-                  if (e) return promise.fail(e);
-                  return promise.fulfill(p);
-                });
-              }
-            }
-          );
-
-          return promise;
-        }
-      }         
-    }
   });
 
   PersonSchema.pre('save', function (next) {

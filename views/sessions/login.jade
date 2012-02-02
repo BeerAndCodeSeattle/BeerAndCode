@@ -4,21 +4,13 @@
       li.error= error
 
 #other_logins
-  ul
-    li
-      a(href='/auth/twitter') log in with twitter
-    li
-      a(href='/auth/github') log in with github
-
-form(action='/login', method='POST').person_details
   h1 Log In
-  #login
-    label(for=everyauth.password.loginFormFieldName) Email
-    br
-    input(type='text', name=everyauth.password.loginFormFieldName, value=email)
-  #password
-    label(for=everyauth.password.passwordFormFieldName) Password
-    br
-    input(type='password', name=everyauth.password.passwordFormFieldName)
-  #submit
-    input(type='submit') Login
+  p Create or log in to a Beer &amp;&amp; Code profile
+  #login_methods
+    .loginMethod
+      a(href='/login/github')
+        img(src='/images/github.png', alt='log in with github')
+    .loginMethod
+      a(href='/login/twitter') 
+        img(src='/images/twitter.png', alt='log in with twitter')
+     br(style='clear: both;')

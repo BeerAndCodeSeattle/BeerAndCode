@@ -1,14 +1,16 @@
 {
   "name": "beer-and-code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "dependencies": {
     "express": "2.3.12",
     "jade": ">= 0.0.1",
     "stylus": ">= 0.13.4",
     "mongoose": ">= 1.4.0",
-    "mongoose-auth": ">= 0.0.1",
     "underscore": ">= 1.1.6",
-    "markdown": ">= 0.2.1"
+    "markdown": ">= 0.2.1",
+    "passport":"= 0.1.5",
+    "passport-twitter":"= 0.1.0",
+    "passport-github":"= 0.1.0"
   }
 }
