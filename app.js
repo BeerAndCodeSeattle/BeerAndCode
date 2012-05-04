@@ -127,7 +127,7 @@ app.post('/people/edit/:id', bacAuth.doAuth, ensureOwnsObject, function (req, re
       person.twitter_nick = req.body.person.twitter_nick;
       person.github_nick = req.body.person.github_nick;
       person.bio = req.body.person.bio;
-      person.languages = _.map(req.body.person.language_string.split(','), function (s) { return s.replace(/\s/g, ''); });
+      person.languages = _.map(req.body.person.language_string.split(','), function (s) { return s.trim(); });
 
       person.save(function (err, p) {
         if (err) {
