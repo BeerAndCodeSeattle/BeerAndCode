@@ -6,3 +6,4 @@ node_modules
 .logs
 .pids
 .devbootstrap
+public/stylesheets/style.css
