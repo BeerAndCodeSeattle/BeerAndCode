@@ -6,9 +6,9 @@ var express = require('express'),
     models = require('./models'),
     bacAuth = require('./authentication'),
     handleError,
-    Person, 
+    Person,
     Project,
-    JobPost, 
+    JobPost,
     JobRequest,
     app;
 
@@ -28,11 +28,11 @@ app.configure(function () {
 });
 
 app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){
-  app.use(express.errorHandler()); 
+  app.use(express.errorHandler());
 });
 
 app.configure('development', function() {
@@ -49,7 +49,7 @@ app.configure('production', function() {
 
 mongoose.connect(app.set('db-uri'));
 models.defineModels(
-  mongoose, 
+  mongoose,
   Project,
   Person,
   JobPost,
@@ -59,7 +59,7 @@ models.defineModels(
     app.JobPost = JobPost = mongoose.model('JobPost');
     app.JobRequest = JobRequest = mongoose.model('JobRequest');
 });
- 
+
 var ensureOwnsObject = function (req, res, next) {
   if (req.params.id === req.user.url_slug) {
     next();
@@ -92,7 +92,7 @@ handleError = function (err, res) {
 // People Related Routes
 app.get('/people/new', function (req, res) {
   res.render('people/new', {
-    title: 'New Person', 
+    title: 'New Person',
     locals: {
       person: new Person()
     }
@@ -139,7 +139,7 @@ app.post('/people/edit/:id', bacAuth.doAuth, ensureOwnsObject, function (req, re
     });
   } else {
     res.redirect('/people/' + req.params.id);
-  }  
+  }
 });
 
 app.post('/people/addProjectToPerson/:id', bacAuth.doAuth, ensureOwnsObject, function (req, res) {
@@ -148,7 +148,7 @@ app.post('/people/addProjectToPerson/:id', bacAuth.doAuth, ensureOwnsObject, fun
       name: req.body.project_name,
       project_url: req.body.project_url,
       description: req.body.project_description
-    }; 
+    };
 
     person.projects.push(project);
     person.save(function (err) {
@@ -156,7 +156,7 @@ app.post('/people/addProjectToPerson/:id', bacAuth.doAuth, ensureOwnsObject, fun
         res.writeHead(200, {
           'Content-Type': 'text/plain'
         });
-        res.end('OK');        
+        res.end('OK');
       } else {
         handleError(err, res);
       }
@@ -179,28 +179,28 @@ app.post('/people/new', bacAuth.doAuth, function (req, res) {
     } else {
       res.redirect('/people/' + person.url_slug);
     }
-  });  
+  });
 });
 
 app.get('/people/:id', bacAuth.doAuth, bacAuth.currentlyLoggedInPerson, function (req, res) {
   var show_edit = false;
 
   Person.findOne({ url_slug: req.params.id }, function (err, person) {
-    if (err) {    
+    if (err) {
       handleError(err, res);
     } else {
       if (person.bio) {
         // Convert bio from md to HTML, but don't persist
-        person.bio = markdown.toHTML(person.bio);    
+        person.bio = markdown.toHTML(person.bio);
       }
 
       // Is the person viewing the owner of the profile?
       if (req.current_person.id == person.id) {
         show_edit = true;
-      }      
+      }
 
       res.render('people/show', {
-        title: person.name, 
+        title: person.name,
         locals: {
           editable: show_edit,
           person: person
@@ -220,7 +220,7 @@ app.get('/people/getGithubProjects/:ghid', bacAuth.doAuth, function (req, res) {
   options.port = 443;
   options.method = 'GET';
 
-  require('https').get(options, function (httpsRes) {        
+  require('https').get(options, function (httpsRes) {
     httpsRes.on('data', function (d) {
       var projects = JSON.parse(d);
 
@@ -230,10 +230,10 @@ app.get('/people/getGithubProjects/:ghid', bacAuth.doAuth, function (req, res) {
            return {
           'name': repo.name,
           'project_url': repo.url,
-          'description': repo.description 
+          'description': repo.description
         };
       });
-      
+
       res.writeHead(200, {
         'Content-Type': 'application/json'
       });
@@ -250,12 +250,12 @@ app.get('/people', function (req, res) {
      } else {
         res.render('people/index', {
           title: 'People',
-          locals: { 
+          locals: {
             people: people
           }
-        });       
-     } 
-  });  
+        });
+     }
+  });
 });
 
 // End People Related Routes
@@ -268,7 +268,7 @@ app.get('/calendar', function (req, res) {
 
 // Jobs routes
 app.get('/jobs/createJobPost', bacAuth.doAuth, function (req, res) {
-  res.render('jobs/new_job_post', { 
+  res.render('jobs/new_job_post', {
     title: 'New Job Post'
   });
 });
@@ -284,7 +284,7 @@ app.post('/jobs/createJobPost', bacAuth.doAuth, function (req, res) {
   job_post.technologies = _.map(data.technologies_string.split(','), function (t) { return t.trim(); });
   job_post.save(function (err) {
     if (err) {
-      handleError(err, res); 
+      handleError(err, res);
     } else {
       res.redirect('/jobs/jobPost/' + job_post.id);
     }
@@ -317,17 +317,17 @@ app.get('/jobs', bacAuth.doAuth, function (req, res) {
   var currentDate = new Date();
   var expirationDate = currentDate.setDate(currentDate.getDate() - 30);
 
-  JobPost.find({ date_created: {$gt : expirationDate }}, function (err1, job_posts) {    
-    JobRequest.find({ date_created: {$gt : expirationDate }}, function (err2, job_requests) {      
+  JobPost.find({ date_created: {$gt : expirationDate }}, function (err1, job_posts) {
+    JobRequest.find({ date_created: {$gt : expirationDate }}, function (err2, job_requests) {
       var modified_requests, modified_postings;
 
       if (err1) {
-        handleError(err1, res); 
+        handleError(err1, res);
       } else if (err2) {
         handleError(err2, res);
       } else {
         var techs = _.union(
-          _.map(job_posts, function (j) { return j.technologies; }), 
+          _.map(job_posts, function (j) { return j.technologies; }),
           _.map(job_requests, function (j) { return j.technologies; }
         ));
 
@@ -338,9 +338,9 @@ app.get('/jobs', bacAuth.doAuth, function (req, res) {
             job_requests: job_requests,
             technologies: techs
           }
-        });     
+        });
       }
-    });    
+    });
   });
 });
 
