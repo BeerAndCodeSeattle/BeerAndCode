@@ -344,6 +344,14 @@ app.get('/jobs', bacAuth.doAuth, function (req, res) {
   });
 });
 
+app.get('/about',function (req, res) {
+  People.find({}, function (err, people) {
+    var languages = _.uniq(_.flatten(_.map(people, function (person) { return person.languages; })));
+    res.render('about/index', { title: 'About' 
+    });
+  });
+});
+
 var port = process.env.PORT || 3000;
 app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
