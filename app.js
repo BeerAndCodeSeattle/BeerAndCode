@@ -345,12 +345,48 @@ app.get('/jobs', bacAuth.doAuth, function (req, res) {
 });
 
 app.get('/about',function (req, res) {
-  People.find({}, function (err, people) {
-    var languages = _.uniq(_.flatten(_.map(people, function (person) { return person.languages; })));
-    res.render('about/index', { title: 'About' 
-    });
+  res.render('about/index', { 
+    title: 'About'
   });
 });
+
+app.get('/about/languageCountData',function (req, res) {
+  Person.find({}, function (err, people) {
+    var languageCounts = {};
+
+    var languages = _.chain(people).
+      map(function (person) {
+        return person.languages; 
+      }).
+      flatten().
+      map(function (language) {
+        return language.toLowerCase();
+      }).
+      filter(function (language) {
+        return language.length > 0;
+      }).
+      uniq().
+      value();
+
+    _.each(people, function (person) {
+      _.each(person.languages, function (language) {
+        var language = language.toLowerCase();
+
+        if (language && language.length > 0) {
+          if (languageCounts[language]) {
+            languageCounts[language] += 1;
+          } else {
+            languageCounts[language] = 1;
+          }
+        }
+      });
+    });
+
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.end(JSON.stringify(languageCounts));
+  });
+});
+
 
 var port = process.env.PORT || 3000;
 app.listen(port);

@@ -1,7 +1,13 @@
 h1 About Beer &amp;&amp; Code Seattle
 
-
 script
   $(function () {
-    alert('the page!'); 
+    $.ajax({
+      url: '/about/languageCountData',
+      dataType: 'json',
+      type: 'GET',
+      success: function (data) {
+        console.log(data);
+      }
+    });
   });
