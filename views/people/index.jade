@@ -5,26 +5,26 @@ h1 People
     - each person in people
       .vcard
         div
-          img(style="float: left;", src="http://www.gravatar.com/avatar/" + person.gravatar + "?s=50&d=mm", alt="photo of ' + person.name, class="photo")
+          img(style="float: left;", src="http://www.gravatar.com/avatar/" + person.gravatar + "?s=50&d=mm", alt="photo of " + person.name, class="photo")
           h2(style="float: left;").name
-            a(href="/people/" + person.url_slug)= person.name      
+            a(href="/people/" + person.url_slug)= person.name
         ul
           - if (person.irc)
             li
               span.irc
-                span(class="type irc") irc: 
+                span(class="type irc") irc:
                 span.value= person.irc
           - if (person.github_nick)
             li
               span.uri
-                span(class="type github") github: 
+                span(class="type github") github:
                   span.value
                     a(href="https://github.com/" + person.github_nick, target="_blank").url= person.github_nick
           - if (person.twitter_nick)
             li
               span.uri
-                span(class="type twitter") twitter: 
-                - if (person.twitter_nick) 
+                span(class="type twitter") twitter:
+                - if (person.twitter_nick)
                   span.value
                     a(href="http://twitter.com/" + person.twitter_nick, target="_blank").url @#{person.twitter_nick}
     br(style="clear: left;")
