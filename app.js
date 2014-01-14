@@ -85,8 +85,7 @@ app.get('/not_authorized', function (req, res) {
 });
 
 handleError = function (err, res) {
-  res.writeHead(500, {'Content-Type': 'text/html'});
-  res.render('error', { locals: { err: err } });
+  res.render('error', { err: err });
 };
 
 // People Related Routes
@@ -244,7 +243,7 @@ app.get('/people/getGithubProjects/:ghid', bacAuth.doAuth, function (req, res) {
 });
 
 app.get('/people', function (req, res) {
-  Person.find({}, [], {sort: {'name': 1}}, function (err, people) {
+  Person.find({}, {}, {sort: 'name'}, function (err, people) {
      if (err) {
        handleError(err, res);
      } else {
